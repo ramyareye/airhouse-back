@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "build": "tsc --noEmit -p tsconfig.worker.json",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check .",
     "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -19,6 +22,7 @@
     "hono": "^4.11.9"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.2",
     "@types/node": "25.2.3",
     "drizzle-kit": "^0.31.9",
     "typescript": "5.9.3",

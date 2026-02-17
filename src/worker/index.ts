@@ -1,18 +1,18 @@
-import { Hono } from "hono";
+import { neon } from "@neondatabase/serverless";
 import * as Sentry from "@sentry/cloudflare";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins/bearer";
 import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { Hono } from "hono";
 
 import * as authSchema from "../../auth-schema";
-import type { Env } from "../types/env";
 import artistsApi from "../routes/api/artists";
 import schedulesApi from "../routes/api/schedules";
 import usersApi from "../routes/api/users";
 import venuesApi from "../routes/api/venues";
 import { errorHandler, notFound } from "../routes/middlewares/error.middlewares";
+import type { Env } from "../types/env";
 
 const app = new Hono<{ Bindings: Env }>();
 

@@ -4,19 +4,19 @@ import {
   artistCategoryLinks,
   artistGenreLinks,
   artistGenres,
-  artistTranslations,
   artists,
-  feedItemTranslations,
+  artistTranslations,
   feedItems,
+  feedItemTranslations,
   scheduleArtists,
   scheduleCategories,
-  scheduleTranslations,
   schedules,
-  venueTranslations,
+  scheduleTranslations,
   venueArtists,
   venueHierarchy,
   venuePolygons,
   venues,
+  venueTranslations,
 } from "./schema";
 
 export const venuesRelations = relations(venues, ({ many }) => ({
@@ -80,49 +80,40 @@ export const scheduleArtistsRelations = relations(scheduleArtists, ({ one }) => 
   }),
 }));
 
-export const artistCategoriesRelations = relations(
-  artistCategories,
-  ({ one, many }) => ({
-    parentCategory: one(artistCategories, {
-      relationName: "category_hierarchy",
-      fields: [artistCategories.parentCategoryId],
-      references: [artistCategories.id],
-    }),
-    childCategories: many(artistCategories, {
-      relationName: "category_hierarchy",
-    }),
-    artistLinks: many(artistCategoryLinks),
-    scheduleLinks: many(scheduleCategories),
+export const artistCategoriesRelations = relations(artistCategories, ({ one, many }) => ({
+  parentCategory: one(artistCategories, {
+    relationName: "category_hierarchy",
+    fields: [artistCategories.parentCategoryId],
+    references: [artistCategories.id],
   }),
-);
+  childCategories: many(artistCategories, {
+    relationName: "category_hierarchy",
+  }),
+  artistLinks: many(artistCategoryLinks),
+  scheduleLinks: many(scheduleCategories),
+}));
 
-export const artistCategoryLinksRelations = relations(
-  artistCategoryLinks,
-  ({ one }) => ({
-    artist: one(artists, {
-      fields: [artistCategoryLinks.artistId],
-      references: [artists.id],
-    }),
-    category: one(artistCategories, {
-      fields: [artistCategoryLinks.categoryId],
-      references: [artistCategories.id],
-    }),
+export const artistCategoryLinksRelations = relations(artistCategoryLinks, ({ one }) => ({
+  artist: one(artists, {
+    fields: [artistCategoryLinks.artistId],
+    references: [artists.id],
   }),
-);
+  category: one(artistCategories, {
+    fields: [artistCategoryLinks.categoryId],
+    references: [artistCategories.id],
+  }),
+}));
 
-export const scheduleCategoriesRelations = relations(
-  scheduleCategories,
-  ({ one }) => ({
-    schedule: one(schedules, {
-      fields: [scheduleCategories.scheduleId],
-      references: [schedules.id],
-    }),
-    category: one(artistCategories, {
-      fields: [scheduleCategories.categoryId],
-      references: [artistCategories.id],
-    }),
+export const scheduleCategoriesRelations = relations(scheduleCategories, ({ one }) => ({
+  schedule: one(schedules, {
+    fields: [scheduleCategories.scheduleId],
+    references: [schedules.id],
   }),
-);
+  category: one(artistCategories, {
+    fields: [scheduleCategories.categoryId],
+    references: [artistCategories.id],
+  }),
+}));
 
 export const venuePolygonsRelations = relations(venuePolygons, ({ one }) => ({
   venue: one(venues, {
@@ -155,46 +146,34 @@ export const venueHierarchyRelations = relations(venueHierarchy, ({ one }) => ({
   }),
 }));
 
-export const artistTranslationsRelations = relations(
-  artistTranslations,
-  ({ one }) => ({
-    artist: one(artists, {
-      fields: [artistTranslations.artistId],
-      references: [artists.id],
-    }),
+export const artistTranslationsRelations = relations(artistTranslations, ({ one }) => ({
+  artist: one(artists, {
+    fields: [artistTranslations.artistId],
+    references: [artists.id],
   }),
-);
+}));
 
-export const venueTranslationsRelations = relations(
-  venueTranslations,
-  ({ one }) => ({
-    venue: one(venues, {
-      fields: [venueTranslations.venueId],
-      references: [venues.id],
-    }),
+export const venueTranslationsRelations = relations(venueTranslations, ({ one }) => ({
+  venue: one(venues, {
+    fields: [venueTranslations.venueId],
+    references: [venues.id],
   }),
-);
+}));
 
-export const scheduleTranslationsRelations = relations(
-  scheduleTranslations,
-  ({ one }) => ({
-    schedule: one(schedules, {
-      fields: [scheduleTranslations.scheduleId],
-      references: [schedules.id],
-    }),
+export const scheduleTranslationsRelations = relations(scheduleTranslations, ({ one }) => ({
+  schedule: one(schedules, {
+    fields: [scheduleTranslations.scheduleId],
+    references: [schedules.id],
   }),
-);
+}));
 
 export const feedItemsRelations = relations(feedItems, ({ many }) => ({
   translations: many(feedItemTranslations),
 }));
 
-export const feedItemTranslationsRelations = relations(
-  feedItemTranslations,
-  ({ one }) => ({
-    feedItem: one(feedItems, {
-      fields: [feedItemTranslations.feedItemId],
-      references: [feedItems.id],
-    }),
+export const feedItemTranslationsRelations = relations(feedItemTranslations, ({ one }) => ({
+  feedItem: one(feedItems, {
+    fields: [feedItemTranslations.feedItemId],
+    references: [feedItems.id],
   }),
-);
+}));

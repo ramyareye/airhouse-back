@@ -1,9 +1,9 @@
-import { Hono } from "hono";
 import { eq } from "drizzle-orm";
-import { getDb } from "../../db/client";
+import { Hono } from "hono";
 import { user } from "../../../auth-schema";
-import { protect } from "../middlewares/auth.middlewares";
+import { getDb } from "../../db/client";
 import type { AuthBindings, AuthContext } from "../../types/auth";
+import { protect } from "../middlewares/auth.middlewares";
 
 const usersApi = new Hono<AuthBindings>();
 usersApi.use("/*", protect);

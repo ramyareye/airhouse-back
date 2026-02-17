@@ -1,8 +1,8 @@
-import { Hono } from "hono";
 import { and, asc, eq, ilike, inArray } from "drizzle-orm";
+import { Hono } from "hono";
 import { getDb } from "../../db/client";
+import { venues, venueTranslations } from "../../db/schema";
 import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
-import { venueTranslations, venues } from "../../db/schema";
 import type { Env } from "../../types/env";
 
 const venuesApi = new Hono<{ Bindings: Env }>();
@@ -13,17 +13,9 @@ venuesApi.get("/", async (c) => {
   const q = c.req.query("q")?.trim();
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 50, 1), 200);
 
-  const where = and(
-    eq(venues.isPublished, true),
-    q ? ilike(venues.name, `%${q}%`) : undefined,
-  );
+  const where = and(eq(venues.isPublished, true), q ? ilike(venues.name, `%${q}%`) : undefined);
 
-  const rows = await db
-    .select()
-    .from(venues)
-    .where(where)
-    .orderBy(asc(venues.name))
-    .limit(limit);
+  const rows = await db.select().from(venues).where(where).orderBy(asc(venues.name)).limit(limit);
 
   if (locale === DEFAULT_LOCALE || rows.length === 0) {
     return c.json({ venues: rows });
@@ -81,12 +73,7 @@ venuesApi.get("/:venueId", async (c) => {
   const [translation] = await db
     .select()
     .from(venueTranslations)
-    .where(
-      and(
-        eq(venueTranslations.venueId, row.id),
-        eq(venueTranslations.locale, locale),
-      ),
-    )
+    .where(and(eq(venueTranslations.venueId, row.id), eq(venueTranslations.locale, locale)))
     .limit(1);
 
   return c.json({

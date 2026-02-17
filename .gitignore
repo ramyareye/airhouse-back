@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -33,7 +34,12 @@ dist-ssr
 package-lock.json
 yarn.lock
 
-.agents
+!.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/airhouse-backend/
+!.agents/skills/airhouse-backend/SKILL.md
 .claude
 
 db-schema

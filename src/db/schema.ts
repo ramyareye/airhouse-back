@@ -57,10 +57,9 @@ export const artistGenres = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
-    parentGenreId: uuid("parent_genre_id").references(
-      (): AnyPgColumn => artistGenres.id,
-      { onDelete: "set null" },
-    ),
+    parentGenreId: uuid("parent_genre_id").references((): AnyPgColumn => artistGenres.id, {
+      onDelete: "set null",
+    }),
     position: integer("position"),
     isPublished: boolean("is_published").notNull().default(true),
     rawContent: jsonb("raw_content"),
@@ -179,8 +178,7 @@ export const schedules = pgTable(
     venueId: uuid("venue_id")
       .notNull()
       .references(() => venues.id, { onDelete: "cascade" }),
-    startsAt: timestamp("starts_at", { withTimezone: true, mode: "string" })
-      .notNull(),
+    startsAt: timestamp("starts_at", { withTimezone: true, mode: "string" }).notNull(),
     endsAt: timestamp("ends_at", { withTimezone: true, mode: "string" }),
     isPublished: boolean("is_published").notNull().default(true),
     rawContent: jsonb("raw_content"),
@@ -341,10 +339,7 @@ export const artistTranslations = pgTable(
   (table) => [
     index("artist_translations_artist_id_idx").on(table.artistId),
     index("artist_translations_locale_idx").on(table.locale),
-    uniqueIndex("artist_translations_artist_locale_uidx").on(
-      table.artistId,
-      table.locale,
-    ),
+    uniqueIndex("artist_translations_artist_locale_uidx").on(table.artistId, table.locale),
   ],
 );
 
@@ -368,10 +363,7 @@ export const venueTranslations = pgTable(
   (table) => [
     index("venue_translations_venue_id_idx").on(table.venueId),
     index("venue_translations_locale_idx").on(table.locale),
-    uniqueIndex("venue_translations_venue_locale_uidx").on(
-      table.venueId,
-      table.locale,
-    ),
+    uniqueIndex("venue_translations_venue_locale_uidx").on(table.venueId, table.locale),
   ],
 );
 
@@ -395,10 +387,7 @@ export const scheduleTranslations = pgTable(
   (table) => [
     index("schedule_translations_schedule_id_idx").on(table.scheduleId),
     index("schedule_translations_locale_idx").on(table.locale),
-    uniqueIndex("schedule_translations_schedule_locale_uidx").on(
-      table.scheduleId,
-      table.locale,
-    ),
+    uniqueIndex("schedule_translations_schedule_locale_uidx").on(table.scheduleId, table.locale),
   ],
 );
 
@@ -423,9 +412,6 @@ export const feedItemTranslations = pgTable(
   (table) => [
     index("feed_item_translations_feed_item_id_idx").on(table.feedItemId),
     index("feed_item_translations_locale_idx").on(table.locale),
-    uniqueIndex("feed_item_translations_feed_item_locale_uidx").on(
-      table.feedItemId,
-      table.locale,
-    ),
+    uniqueIndex("feed_item_translations_feed_item_locale_uidx").on(table.feedItemId, table.locale),
   ],
 );

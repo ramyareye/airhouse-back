@@ -1,8 +1,8 @@
-import { Hono } from "hono";
 import { and, asc, eq, ilike, inArray } from "drizzle-orm";
+import { Hono } from "hono";
 import { getDb } from "../../db/client";
-import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import { artists, artistTranslations } from "../../db/schema";
+import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import type { Env } from "../../types/env";
 
 const artistsApi = new Hono<{ Bindings: Env }>();
@@ -13,17 +13,9 @@ artistsApi.get("/", async (c) => {
   const q = c.req.query("q")?.trim();
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 50, 1), 200);
 
-  const where = and(
-    eq(artists.isPublished, true),
-    q ? ilike(artists.name, `%${q}%`) : undefined,
-  );
+  const where = and(eq(artists.isPublished, true), q ? ilike(artists.name, `%${q}%`) : undefined);
 
-  const rows = await db
-    .select()
-    .from(artists)
-    .where(where)
-    .orderBy(asc(artists.name))
-    .limit(limit);
+  const rows = await db.select().from(artists).where(where).orderBy(asc(artists.name)).limit(limit);
 
   if (locale === DEFAULT_LOCALE || rows.length === 0) {
     return c.json({ artists: rows });
@@ -81,12 +73,7 @@ artistsApi.get("/:artistId", async (c) => {
   const [translation] = await db
     .select()
     .from(artistTranslations)
-    .where(
-      and(
-        eq(artistTranslations.artistId, row.id),
-        eq(artistTranslations.locale, locale),
-      ),
-    )
+    .where(and(eq(artistTranslations.artistId, row.id), eq(artistTranslations.locale, locale)))
     .limit(1);
 
   return c.json({
