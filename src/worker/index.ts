@@ -67,9 +67,6 @@ export function createAuth(env: Env) {
     }),
     user: {
       modelName: "user",
-      additionalFields: {
-        partner_id: { type: "string", nullable: true, returned: true },
-      },
     },
     emailAndPassword: {
       enabled: true,

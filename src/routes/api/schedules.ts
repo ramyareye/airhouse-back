@@ -1,13 +1,23 @@
 import { Hono } from "hono";
 import { and, asc, eq, gte, inArray, lte } from "drizzle-orm";
 import { getDb } from "../../db/client";
-import { artists, scheduleArtists, schedules, venues } from "../../db/schema";
+import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
+import {
+  artistTranslations,
+  artists,
+  scheduleArtists,
+  scheduleTranslations,
+  schedules,
+  venueTranslations,
+  venues,
+} from "../../db/schema";
 import type { Env } from "../../types/env";
 
 const schedulesApi = new Hono<{ Bindings: Env }>();
 
 schedulesApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
+  const locale = resolveLocale(c);
   const venueId = c.req.query("venueId")?.trim();
   const artistId = c.req.query("artistId")?.trim();
   const from = c.req.query("from")?.trim();
@@ -48,7 +58,6 @@ schedulesApi.get("/", async (c) => {
         id: venues.id,
         name: venues.name,
         slug: venues.slug,
-        city: venues.city,
       },
     })
     .from(schedules)
@@ -58,6 +67,7 @@ schedulesApi.get("/", async (c) => {
     .limit(limit);
 
   const scheduleIds = events.map((event) => event.id);
+  const venueIds = events.map((event) => event.venue.id);
 
   const links = scheduleIds.length
     ? await db
@@ -87,10 +97,78 @@ schedulesApi.get("/", async (c) => {
     artistsBySchedule.set(link.scheduleId, current);
   }
 
+  if (locale === DEFAULT_LOCALE) {
+    return c.json({
+      schedules: events.map((event) => ({
+        ...event,
+        artists: artistsBySchedule.get(event.id) ?? [],
+      })),
+    });
+  }
+
+  const [scheduleI18n, venueI18n, artistI18n] = await Promise.all([
+    scheduleIds.length
+      ? db
+          .select()
+          .from(scheduleTranslations)
+          .where(
+            and(
+              eq(scheduleTranslations.locale, locale),
+              inArray(scheduleTranslations.scheduleId, scheduleIds),
+            ),
+          )
+      : Promise.resolve([]),
+    venueIds.length
+      ? db
+          .select()
+          .from(venueTranslations)
+          .where(
+            and(
+              eq(venueTranslations.locale, locale),
+              inArray(venueTranslations.venueId, venueIds),
+            ),
+          )
+      : Promise.resolve([]),
+    links.length
+      ? db
+          .select()
+          .from(artistTranslations)
+          .where(
+            and(
+              eq(artistTranslations.locale, locale),
+              inArray(
+                artistTranslations.artistId,
+                links.map((link) => link.artistId),
+              ),
+            ),
+          )
+      : Promise.resolve([]),
+  ]);
+
+  const scheduleI18nById = new Map(
+    scheduleI18n.map((translation) => [translation.scheduleId, translation]),
+  );
+  const venueI18nById = new Map(
+    venueI18n.map((translation) => [translation.venueId, translation]),
+  );
+  const artistI18nById = new Map(
+    artistI18n.map((translation) => [translation.artistId, translation]),
+  );
+
   return c.json({
     schedules: events.map((event) => ({
       ...event,
-      artists: artistsBySchedule.get(event.id) ?? [],
+      title: scheduleI18nById.get(event.id)?.title ?? event.title,
+      description:
+        scheduleI18nById.get(event.id)?.description ?? event.description,
+      venue: {
+        ...event.venue,
+        name: venueI18nById.get(event.venue.id)?.name ?? event.venue.name,
+      },
+      artists: (artistsBySchedule.get(event.id) ?? []).map((artist) => ({
+        ...artist,
+        name: artistI18nById.get(artist.id)?.name ?? artist.name,
+      })),
     })),
   });
 });
@@ -98,6 +176,7 @@ schedulesApi.get("/", async (c) => {
 schedulesApi.get("/:scheduleId", async (c) => {
   const scheduleId = c.req.param("scheduleId");
   const db = getDb(c.env.DATABASE_URL);
+  const locale = resolveLocale(c);
 
   const [event] = await db
     .select({
@@ -111,7 +190,6 @@ schedulesApi.get("/:scheduleId", async (c) => {
         id: venues.id,
         name: venues.name,
         slug: venues.slug,
-        city: venues.city,
       },
     })
     .from(schedules)
@@ -134,7 +212,66 @@ schedulesApi.get("/:scheduleId", async (c) => {
     .where(eq(scheduleArtists.scheduleId, scheduleId))
     .orderBy(asc(artists.name));
 
-  return c.json({ schedule: { ...event, artists: linkedArtists } });
+  if (locale === DEFAULT_LOCALE) {
+    return c.json({ schedule: { ...event, artists: linkedArtists } });
+  }
+
+  const [scheduleI18n, venueI18n, artistI18n] = await Promise.all([
+    db
+      .select()
+      .from(scheduleTranslations)
+      .where(
+        and(
+          eq(scheduleTranslations.scheduleId, event.id),
+          eq(scheduleTranslations.locale, locale),
+        ),
+      )
+      .limit(1),
+    db
+      .select()
+      .from(venueTranslations)
+      .where(
+        and(
+          eq(venueTranslations.venueId, event.venue.id),
+          eq(venueTranslations.locale, locale),
+        ),
+      )
+      .limit(1),
+    linkedArtists.length
+      ? db
+          .select()
+          .from(artistTranslations)
+          .where(
+            and(
+              eq(artistTranslations.locale, locale),
+              inArray(
+                artistTranslations.artistId,
+                linkedArtists.map((artist) => artist.id),
+              ),
+            ),
+          )
+      : Promise.resolve([]),
+  ]);
+
+  const artistI18nById = new Map(
+    artistI18n.map((translation) => [translation.artistId, translation]),
+  );
+
+  return c.json({
+    schedule: {
+      ...event,
+      title: scheduleI18n[0]?.title ?? event.title,
+      description: scheduleI18n[0]?.description ?? event.description,
+      venue: {
+        ...event.venue,
+        name: venueI18n[0]?.name ?? event.venue.name,
+      },
+      artists: linkedArtists.map((artist) => ({
+        ...artist,
+        name: artistI18nById.get(artist.id)?.name ?? artist.name,
+      })),
+    },
+  });
 });
 
 export default schedulesApi;

@@ -7,7 +7,6 @@ export type AuthUser = {
   name?: string | null;
   emailVerified?: boolean;
   image?: string | null;
-  partner_id?: string | null;
 };
 
 export type AuthSession = {

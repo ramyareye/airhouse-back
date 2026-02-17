@@ -1,20 +1,36 @@
-# Airhouse Festival Backend
+# Airhouse Backend
 
-Description: Cloudflare Worker API + Postgres access for Airhouse Festival. Handles content APIs (artists/venues/schedules/etc), auth, purchases/orders, caching, and shared backend logic.
-Package manager: Bun (`bun` / `bunx`).
+Backend for https://www.the-airhouse.com/.
 
-Key paths:
-- src/worker: Worker entrypoint + env wiring
-- src/routes: Hono routes (HTTP API)
-- src/routes/api: API modules (cities, venues, areas, bundles, tags, auth, user, etc.)
-- src/routes/middlewares: cache/auth helpers
-- src/db: Drizzle schema + DB client
-- src/lib: shared utilities (e.g. media URL normalization)
-- drizzle: SQL migrations
-- docs: project docs (cost model, analytics events, QA notes)
-- wrangler.json: Worker config + env vars
+## Product Context
+- This repo powers app/web backend APIs for Airhouse experiences.
+- Current focus: content delivery (artists, venues, schedules), auth, and user profile APIs.
+- Infrastructure stack: Cloudflare Workers + Postgres (Neon) + Drizzle ORM + Hono.
 
-Commands:
-- bun run dev: local dev server
-- bun run build: production build
-- bun run deploy: deploy to Cloudflare Workers
+## Current Domain Areas
+- Artists
+- Venues
+- Schedules
+- Feed items
+- Authentication and user identity/session tables
+
+## Planned Feature Direction
+- Interactive map support: add map-related APIs and data structures for venue/location lookup.
+- Static map tiles: serve tiles as static assets (Cloudflare static hosting/R2-backed strategy) rather than generating tiles at request time.
+- Personalized schedules: user login + "add to my schedule" flow for saved events.
+
+## Important Paths
+- `src/worker`: Worker entrypoint + env wiring
+- `src/routes`: Hono route registration
+- `src/routes/api`: API modules
+- `src/routes/middlewares`: auth/error/cache helpers
+- `src/db`: Drizzle schema, relations, and DB client
+- `drizzle`: SQL migration files
+- `docs`: project/product docs
+- `wrangler.json`: Cloudflare Worker config
+
+## Commands
+- `bun run dev`: local dev
+- `bun run build`: type/build check
+- `bun run test`: tests
+- `bun run deploy`: deploy to Cloudflare Workers
