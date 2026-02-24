@@ -4,8 +4,10 @@ import { getDb } from "../../db/client";
 import { artists, artistTranslations } from "../../db/schema";
 import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import type { Env } from "../../types/env";
+import { cachePublic } from "../middlewares/cache.middlewares";
 
 const artistsApi = new Hono<{ Bindings: Env }>();
+artistsApi.use("/*", cachePublic());
 
 artistsApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);

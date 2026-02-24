@@ -1,0 +1,93 @@
+day_label,stage_name,time_raw,start_time,end_time,artist_name_raw,artist_name_en,artist_name_ko,artist_key,artist_slug_candidate,row_number,source_file
+일-월,마당,10:00~11:00,10:00,11:00,HEEN DANCE : KICO / 흰댄스 : 키코,HEEN DANCE : KICO,흰댄스 : 키코,HEENDANCEKICO,heen-dance-kico,25,2026__sheet.csv
+일-월,마당,11:00~12:00,11:00,12:00,FIELD RECORDING / 들리는 매개체,FIELD RECORDING,들리는 매개체,FIELDRECORDING,field-recording,26,2026__sheet.csv
+일-월,마당,12:00~13:00,12:00,13:00,KOREA FOOD HAND RITUAL / 손으로 만드는 한국 음식,KOREA FOOD HAND RITUAL,손으로 만드는 한국 음식,KOREAFOODHANDRITUAL,korea-food-hand-ritual,27,2026__sheet.csv
+일-월,마당,13:00~14:00,13:00,14:00,MOTHER-OF-PEARL KEYRING MAKING 자개 키링 만들기,MOTHER-OF-PEARL KEYRING MAKING,자개 키링 만들기,MOTHEROFPEARLKEYRINGMAKING,mother-of-pearl-keyring-making,28,2026__sheet.csv
+일-월,마당,17:00~18:00,17:00,18:00,DISCO AEROBIC / 디스코에어로빅,DISCO AEROBIC,디스코에어로빅,DISCOAEROBIC,disco-aerobic,19,2026__sheet.csv
+일-월,마당,19:00~20:00,19:00,20:00,DANGJOK LIVE COUNSELING CENTER 댕쪽이 라이브 상담소,DANGJOK LIVE COUNSELING CENTER,댕쪽이 라이브 상담소,DANGJOKLIVECOUNSELINGCENTER,dangjok-live-counseling-center,20,2026__sheet.csv
+일-월,마당,20:00~21:00,20:00,21:00,AIRHOUSE CEREMONY / 에어하우스 세레모니,AIRHOUSE CEREMONY,에어하우스 세레모니,AIRHOUSECEREMONY,airhouse-ceremony,21,2026__sheet.csv
+일-월,마당,21:00~22:00,21:00,22:00,SAMUI / 사뮈,SAMUI,사뮈,SAMUI,samui,22,2026__sheet.csv
+일-월,마당,23:00~24:00,23:00,24:00,DAMONS YEAR / 데이먼스 이어,DAMONS YEAR,데이먼스 이어,DAMONSYEAR,damons-year,23,2026__sheet.csv
+일-월,마음,02:00~04:00,02:00,04:00,DJ SOULSCAPE,DJ SOULSCAPE,디제이 소울스케이프,DJSOULSCAPE,dj-soulscape,23,2026__sheet.csv
+일-월,마음,04:00~06:00,04:00,06:00,OUISSAM,OUISSAM,,OUISSAM,ouissam,24,2026__sheet.csv
+일-월,마음,07:00~08:00,07:00,08:00,HEALING HATHA YOGA / 힐링 하타 요가,HEALING HATHA YOGA,힐링 하타 요가,HEALINGHATHAYOGA,healing-hatha-yoga,25,2026__sheet.csv
+일-월,마음,09:00~10:00,09:00,10:00,INDIGO SUNRISE AWAKENING THE EARTH RESONANCE(432Hz) 인디고 선라이즈 – 대지의 공명을 깨우다 (432Hz),INDIGO SUNRISE AWAKENING THE EARTH RESONANCE(432Hz) – (432Hz),인디고 선라이즈 대지의 공명을 깨우다,INDIGOSUNRISEAWAKENINGTHEEARTHRESONANCE432HZ432HZ,,26,2026__sheet.csv
+일-월,마음,11:00~12:00,11:00,12:00,VENERABLE BOMAN’S BUDDHIST PSYCHOLOGY 보만스님의 불교심리학,VENERABLE BOMAN’S BUDDHIST PSYCHOLOGY,보만스님의 불교심리학,VENERABLEBOMANSBUDDHISTPSYCHOLOGY,venerable-boman-s-buddhist-psychology,27,2026__sheet.csv
+일-월,마음,18:00~19:00,18:00,19:00,SUNDOWN GONG CEREMONY / 일몰 공 세레모니,SUNDOWN GONG CEREMONY,일몰 공 세레모니,SUNDOWNGONGCEREMONY,sundown-gong-ceremony,18,2026__sheet.csv
+일-월,마음,20:00~21:00,20:00,21:00,KIM SAWOL 김사월,KIM SAWOL,김사월,KIMSAWOL,kim-sawol,19,2026__sheet.csv
+일-월,마음,22:00~23:00,22:00,23:00,NOVASIA / 노바시아,NOVASIA,노바시아,NOVASIA,novasia,20,2026__sheet.csv
+일-월,마음,24:00~02:00,24:00,02:00,MOGWAA (LIVE),MOGWAA (LIVE),모과 (라이브),MOGWAALIVE,mogwaa-live,22,2026__sheet.csv
+일-월,바람,17:00-18:00,17:00,18:00,RAKUNELAMA 라쿠네라마,RAKUNELAMA,라쿠네라마,RAKUNELAMA,rakunelama,17,2026__sheet.csv
+일-월,바람,19:00-20:00,19:00,20:00,SAY SUE ME 세이수미,SAY SUE ME,세이수미,SAYSUEME,say-sue-me,18,2026__sheet.csv
+일-월,바람,21:00-22:00,21:00,22:00,JISOKURYCLUB 지소쿠리클럽,JISOKURYCLUB,지소쿠리클럽,JISOKURYCLUB,jisokuryclub,19,2026__sheet.csv
+일-월,숲,02:00-04:00,02:00,04:00,MARCO SHUTTLE,MARCO SHUTTLE,,MARCOSHUTTLE,marco-shuttle,24,2026__sheet.csv
+일-월,숲,04:00-06:00,04:00,06:00,XANEXX,XANEXX,자넥스,XANEXX,xanexx,25,2026__sheet.csv
+일-월,숲,22:00-24:00,22:00,24:00,ZORBA,ZORBA,조르바,ZORBA,zorba,22,2026__sheet.csv
+일-월,숲,24:00-02:00,24:00,02:00,KONDUKU,KONDUKU,,KONDUKU,konduku,23,2026__sheet.csv
+일-월,잔디,01:00-03:00,01:00,03:00,ROZA TERENZI,ROZA TERENZI,로자 테렌지,ROZATERENZI,roza-terenzi,23,2026__sheet.csv
+일-월,잔디,11:00-13:00,11:00,13:00,LEFTO EARLY BIRD,LEFTO EARLY BIRD,,LEFTOEARLYBIRD,lefto-early-bird,27,2026__sheet.csv
+일-월,잔디,13:00-16:00,13:00,16:00,DEMUJA,DEMUJA,,DEMUJA,demuja,28,2026__sheet.csv
+일-월,잔디,13:00~15:00,13:00,15:00,운동회,운동회,,,,17,2026__sheet.csv
+일-월,잔디,16:00-17:30,16:00,17:30,DUUMOK,DUUMOK,두목,DUUMOK,duumok,18,2026__sheet.csv
+일-월,잔디,17:30-19:00,17:30,19:00,DGURU,DGURU,,DGURU,dguru,19,2026__sheet.csv
+일-월,잔디,19:00-21:00,19:00,21:00,OUISSAM,OUISSAM,,OUISSAM,ouissam,20,2026__sheet.csv
+일-월,잔디,21:00-23:00,21:00,23:00,SALLY C,SALLY C,,SALLYC,sally-c,21,2026__sheet.csv
+일-월,잔디,23:00-01:00,23:00,01:00,BAMBOUNOU,BAMBOUNOU,밤부누,BAMBOUNOU,bambounou,22,2026__sheet.csv
+일-월,한옥,01:00-03:00,01:00,03:00,DJ MASDA,DJ MASDA,디제이 마스다,DJMASDA,dj-masda,23,2026__sheet.csv
+일-월,한옥,03:00-05:00,03:00,05:00,NICOLAS LUTZ,NICOLAS LUTZ,니콜라스 럿츠,NICOLASLUTZ,nicolas-lutz,24,2026__sheet.csv
+일-월,한옥,05:00-08:00,05:00,08:00,BINH,BINH,,BINH,binh,25,2026__sheet.csv
+일-월,한옥,08:00-11:00,08:00,11:00,VERA,VERA,,VERA,vera,26,2026__sheet.csv
+일-월,한옥,15:00-17:00,15:00,17:00,ANTIDOTE,ANTIDOTE,,ANTIDOTE,,18,2026__sheet.csv
+일-월,한옥,17:00-19:00,17:00,19:00,ANTIDOTE,ANTIDOTE,,ANTIDOTE,,19,2026__sheet.csv
+일-월,한옥,19:00-21:00,19:00,21:00,MIHAK,MIHAK,,MIHAK,mihak,20,2026__sheet.csv
+일-월,한옥,21:00-23:00,21:00,23:00,ANTWORK,ANTWORK,,ANTWORK,antwork,21,2026__sheet.csv
+일-월,한옥,23:00-01:00,23:00,01:00,RAPHAEL CARRAU,RAPHAEL CARRAU,,RAPHAELCARRAU,raphael-carrau,22,2026__sheet.csv
+토-일,마당,10:00~11:00,10:00,11:00,AIRHOUSE YOGA FLOW 에어하우스 요가 플로우,AIRHOUSE YOGA FLOW,에어하우스 요가 플로우,AIRHOUSEYOGAFLOW,airhouse-yoga-flow,12,2026__sheet.csv
+토-일,마당,12:00~13:00,12:00,13:00,KOREA FOOD HAND RITUAL 손으로 만드는 한국 음식,KOREA FOOD HAND RITUAL,손으로 만드는 한국 음식,KOREAFOODHANDRITUAL,korea-food-hand-ritual,14,2026__sheet.csv
+토-일,마당,13:00~14:00,13:00,14:00,FIELD RECORDING / 들리는 매개체,FIELD RECORDING,들리는 매개체,FIELDRECORDING,field-recording,15,2026__sheet.csv
+토-일,마당,14:00~15:00,14:00,15:00,INDIGO DYEING EXPERIENCE 쪽염색 반다나 체험,INDIGO DYEING EXPERIENCE,쪽염색 반다나 체험,INDIGODYEINGEXPERIENCE,indigo-dyeing-experience,16,2026__sheet.csv
+토-일,마당,17:00~18:00,17:00,18:00,WELLNESS TAEKWONDO 웰니스 태권도,WELLNESS TAEKWONDO,웰니스 태권도,WELLNESSTAEKWONDO,wellness-taekwondo,6,2026__sheet.csv
+토-일,마당,19:00~20:00,19:00,20:00,MINDFUL AROMATHERAPY & ROLL-ON MAKING 마음챙김 아로마테라피&아로마롤온 만들기,MINDFUL AROMATHERAPY & ROLL-ON MAKING,마음챙김 아로마테라피&아로마롤온 만들기,MINDFULAROMATHERAPYROLLONMAKING,,7,2026__sheet.csv
+토-일,마당,20:00~21:00,20:00,21:00,AIRHOUSE CEREMONY 에어하우스 세레모니,AIRHOUSE CEREMONY,에어하우스 세레모니,AIRHOUSECEREMONY,airhouse-ceremony,8,2026__sheet.csv
+토-일,마당,21:00~22:00,21:00,22:00,SAMULNORI ON : PAN ON 사물놀이 온ON : 판 온,SAMULNORI ON : PAN ON :,사물놀이 온ON : 판 온,SAMULNORIONPANON,samulnori-on-pan-on,9,2026__sheet.csv
+토-일,마당,23:00~24:00,23:00,24:00,CHAWOOL 차울,CHAWOOL,차울,CHAWOOL,chawool,10,2026__sheet.csv
+토-일,마음,02:00~04:00,02:00,04:00,JONGHO (LIVE),JONGHO (LIVE),종호(라이브),JONGHOLIVE,jongho-live,10,2026__sheet.csv
+토-일,마음,04:00~06:00,04:00,06:00,ROBERT ISTOC,ROBERT ISTOC,로베르투 이스톡,ROBERTISTOC,robert-istoc,11,2026__sheet.csv
+토-일,마음,07:00~08:00,07:00,08:00,VINYASA MOVEMENT / 빈야사 무브먼트,VINYASA MOVEMENT,빈야사 무브먼트,VINYASAMOVEMENT,vinyasa-movement,12,2026__sheet.csv
+토-일,마음,09:00~10:00,09:00,10:00,HANDPAN MORNING FLOW 핸드팬과 함께하는 아침의 흐름,HANDPAN MORNING FLOW,핸드팬 모닝 플로우,HANDPANMORNINGFLOW,handpan-morning-flow,13,2026__sheet.csv
+토-일,마음,11:00~12:00,11:00,12:00,VOICE OF THE TREES: A FOREST TEMPLE 나무의 목소리: 숲의 사원,VOICE OF THE TREES: A FOREST TEMPLE,나무의 목소리: 숲의 사원,VOICEOFTHETREESAFORESTTEMPLE,voice-of-the-trees-a-forest-temple,14,2026__sheet.csv
+토-일,마음,13:00~14:00,13:00,14:00,ZAHO : WHERE RHYTHM PAUSES 자호 : 리듬이 머무는 순간,ZAHO : WHERE RHYTHM PAUSES :,자호: 리듬이 머무는 순간,ZAHOWHERERHYTHMPAUSES,zaho-where-rhythm-pauses,15,2026__sheet.csv
+토-일,마음,15:00~16:00,15:00,16:00,NABIYON (LIVE) IMPROVISED VOICE & SOUND HEALING 나비연 즉흥소리 & 사운드 힐링 콘서트,NABIYON (LIVE) IMPROVISED VOICE & SOUND HEALING &,나비연 즉흥소리 사운드 힐링 콘서트,NABIYONLIVEIMPROVISEDVOICESOUNDHEALING,,16,2026__sheet.csv
+토-일,마음,18:00~19:00,18:00,19:00,BODY ART MEDITATION / 체감 예술 명상,BODY ART MEDITATION,체감 예술 명상,BODYARTMEDITATION,body-art-meditation,5,2026__sheet.csv
+토-일,마음,20:00~21:00,20:00,21:00,KIM OKI : EXORCIST KING / 김오키 퇴마왕,KIM OKI : EXORCIST KING,김오키 퇴마왕,KIMOKIEXORCISTKING,kim-oki-exorcist-king,6,2026__sheet.csv
+토-일,마음,22:00~23:00,22:00,23:00,INDIGO MOONWAVE SOUNDHEALING 인디고 문웨이브 사운드 힐링,INDIGO MOONWAVE SOUNDHEALING,인디고 문웨이브 사운드 힐링,INDIGOMOONWAVESOUNDHEALING,indigo-moonwave-soundhealing,7,2026__sheet.csv
+토-일,마음,24:00~02:00,24:00,02:00,VERA,VERA,,VERA,vera,9,2026__sheet.csv
+토-일,바람,17:00-18:00,17:00,18:00,OYSTERS 오이스터즈,OYSTERS 오이스터즈,오이스터스,OYSTERS,oysters,4,2026__sheet.csv
+토-일,바람,19:00-20:00,19:00,20:00,MEANINGFUL STONE 김뜻돌,MEANINGFUL STONE,김뜻돌,MEANINGFULSTONE,meaningful-stone,5,2026__sheet.csv
+토-일,바람,21:00-22:00,21:00,22:00,CHANG KIHA 장기하,CHANG KIHA,장기하,CHANGKIHA,chang-kiha,6,2026__sheet.csv
+토-일,숲,02:00-04:00,02:00,04:00,SUNJU HARGUN,SUNJU HARGUN,,SUNJUHARGUN,sunju-hargun,11,2026__sheet.csv
+토-일,숲,04:00-06:00,04:00,06:00,SUNGHOON,SUNGHOON,,SUNGHOON,sunghoon,12,2026__sheet.csv
+토-일,숲,16:00~20:00,16:00,20:00,KOMPAKT RECORD,KOMPAKT RECORD,,KOMPAKTRECORD,,7,2026__sheet.csv
+토-일,숲,22:00-24:00,22:00,24:00,DJ SIN,DJ SIN,,DJSIN,dj-sin,9,2026__sheet.csv
+토-일,숲,24:00-02:00,24:00,02:00,ROBERT ISTOC,ROBERT ISTOC,로베르투 이스톡,ROBERTISTOC,robert-istoc,10,2026__sheet.csv
+토-일,작가,,,,CHANG SEAHEE / 장세희,CHANG SEAHEE,장세희,CHANGSEAHEE,chang-seahee,4,2026__sheet.csv
+토-일,작가,,,,CONXI SANE,CONXI SANE,,CONXISANE,,10,2026__sheet.csv
+토-일,작가,,,,CONXI SANE (LIVE PAINTING),CONXI SANE (LIVE PAINTING),,CONXISANELIVEPAINTING,conxi-sane-live-painting,5,2026__sheet.csv
+토-일,작가,,,,GOO GIJEONG / 구기정,GOO GIJEONG,구기정,GOOGIJEONG,goo-gijeong,6,2026__sheet.csv
+토-일,작가,,,,JUNG SEUNG / 정승,JUNG SEUNG,정승,JUNGSEUNG,jung-seung,7,2026__sheet.csv
+토-일,작가,,,,STUDIO NOKE / 스튜디오 노케,STUDIO NOKE,스튜디오 노케,STUDIONOKE,studio-noke,8,2026__sheet.csv
+토-일,작가,,,,VIIA YEON / 비아 연,VIIA YEON,비아 연,VIIAYEON,viia-yeon,9,2026__sheet.csv
+토-일,잔디,02:30-04:00,02:30,04:00,NOMTII,NOMTII,놈티,NOMTII,nomtii,11,2026__sheet.csv
+토-일,잔디,16:00-17:30,16:00,17:30,SUNDAY LEE,SUNDAY LEE,선데이 리,SUNDAYLEE,sunday-lee,5,2026__sheet.csv
+토-일,잔디,17:30-19:00,17:30,19:00,AFRODITE,AFRODITE,아프로다이트,AFRODITE,afrodite,6,2026__sheet.csv
+토-일,잔디,19:00-20:30,19:00,20:30,DAOX,DAOX,다옥스,DAOX,daox,7,2026__sheet.csv
+토-일,잔디,20:30-22:30,20:30,22:30,ARMEN MIRAN,ARMEN MIRAN,아르멘미란,ARMENMIRAN,armen-miran,8,2026__sheet.csv
+토-일,잔디,22:30-24:30,22:30,24:30,SÉBASTIEN LÉGER,SÉBASTIEN LÉGER,세바스티앙 레제,SEBASTIENLEGER,sebastien-leger,9,2026__sheet.csv
+토-일,잔디,24:30-02:30,24:30,02:30,SPACE MOTION,SPACE MOTION,,SPACEMOTION,space-motion,10,2026__sheet.csv
+토-일,한옥,03:00-05:00,03:00,05:00,GABBS,GABBS,갑스,GABBS,gabbs,11,2026__sheet.csv
+토-일,한옥,05:00-08:00,05:00,08:00,FRANCESCO DEL GARDA,FRANCESCO DEL GARDA,프란체스코 델 가르다,FRANCESCODELGARDA,francesco-del-garda,12,2026__sheet.csv
+토-일,한옥,08:00-11:00,08:00,11:00,FRANCESCO FARFA,FRANCESCO FARFA,프란체스코 팔파,FRANCESCOFARFA,francesco-farfa,13,2026__sheet.csv
+토-일,한옥,19:00-21:00,19:00,21:00,DOTT,DOTT,,DOTT,dott,7,2026__sheet.csv
+토-일,한옥,21:00-23:00,21:00,23:00,KIBUM B2B COSMJN,KIBUM B2B COSMJN,,KIBUMB2BCOSMJN,kibum-b2b-cosmjn,8,2026__sheet.csv
+토-일,한옥,23:00-24:30,23:00,24:30,DATA MEMORY ACCESS (LIVE),DATA MEMORY ACCESS (LIVE),데이타 메모리 엑세스 (라이브),DATAMEMORYACCESSLIVE,data-memory-access-live,9,2026__sheet.csv
+토-일,한옥,24:30-03:00,24:30,03:00,SHONKY,SHONKY,숀키,SHONKY,shonky,10,2026__sheet.csv

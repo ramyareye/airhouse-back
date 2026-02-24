@@ -12,8 +12,10 @@ import {
 } from "../../db/schema";
 import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import type { Env } from "../../types/env";
+import { cachePublic } from "../middlewares/cache.middlewares";
 
 const schedulesApi = new Hono<{ Bindings: Env }>();
+schedulesApi.use("/*", cachePublic());
 
 schedulesApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
