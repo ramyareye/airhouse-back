@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { getDb } from "../../db/client";
 import { venues, venueTranslations } from "../../db/schema";
 import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
+import { resolveFeaturedImageUrl } from "../../lib/media";
 import type { Env } from "../../types/env";
 import { cachePublic } from "../middlewares/cache.middlewares";
 
@@ -18,9 +19,14 @@ venuesApi.get("/", async (c) => {
   const where = and(eq(venues.isPublished, true), q ? ilike(venues.name, `%${q}%`) : undefined);
 
   const rows = await db.select().from(venues).where(where).orderBy(asc(venues.name)).limit(limit);
+  const resolvedRows = rows.map((row) => ({
+    ...row,
+    featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
+    featuredLogoUrl: resolveFeaturedImageUrl(row.logoUrl),
+  }));
 
   if (locale === DEFAULT_LOCALE || rows.length === 0) {
-    return c.json({ venues: rows });
+    return c.json({ venues: resolvedRows });
   }
 
   const translations = await db
@@ -41,7 +47,7 @@ venuesApi.get("/", async (c) => {
   );
 
   return c.json({
-    venues: rows.map((row) => {
+    venues: resolvedRows.map((row) => {
       const translation = translationsByVenueId.get(row.id);
       if (!translation) return row;
       return {
@@ -68,8 +74,14 @@ venuesApi.get("/:venueId", async (c) => {
     return c.json({ error: "Venue not found" }, 404);
   }
 
+  const resolvedRow = {
+    ...row,
+    featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
+    featuredLogoUrl: resolveFeaturedImageUrl(row.logoUrl),
+  };
+
   if (locale === DEFAULT_LOCALE) {
-    return c.json({ venue: row });
+    return c.json({ venue: resolvedRow });
   }
 
   const [translation] = await db
@@ -81,11 +93,11 @@ venuesApi.get("/:venueId", async (c) => {
   return c.json({
     venue: translation
       ? {
-          ...row,
-          name: translation.name ?? row.name,
-          description: translation.description ?? row.description,
+          ...resolvedRow,
+          name: translation.name ?? resolvedRow.name,
+          description: translation.description ?? resolvedRow.description,
         }
-      : row,
+      : resolvedRow,
   });
 });
 

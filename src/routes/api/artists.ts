@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { getDb } from "../../db/client";
 import { artists, artistTranslations } from "../../db/schema";
 import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
+import { resolveFeaturedImageUrl } from "../../lib/media";
 import type { Env } from "../../types/env";
 import { cachePublic } from "../middlewares/cache.middlewares";
 
@@ -18,9 +19,13 @@ artistsApi.get("/", async (c) => {
   const where = and(eq(artists.isPublished, true), q ? ilike(artists.name, `%${q}%`) : undefined);
 
   const rows = await db.select().from(artists).where(where).orderBy(asc(artists.name)).limit(limit);
+  const resolvedRows = rows.map((row) => ({
+    ...row,
+    featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
+  }));
 
   if (locale === DEFAULT_LOCALE || rows.length === 0) {
-    return c.json({ artists: rows });
+    return c.json({ artists: resolvedRows });
   }
 
   const translations = await db
@@ -41,7 +46,7 @@ artistsApi.get("/", async (c) => {
   );
 
   return c.json({
-    artists: rows.map((row) => {
+    artists: resolvedRows.map((row) => {
       const translation = translationsByArtistId.get(row.id);
       if (!translation) return row;
       return {
@@ -68,8 +73,13 @@ artistsApi.get("/:artistId", async (c) => {
     return c.json({ error: "Artist not found" }, 404);
   }
 
+  const resolvedRow = {
+    ...row,
+    featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
+  };
+
   if (locale === DEFAULT_LOCALE) {
-    return c.json({ artist: row });
+    return c.json({ artist: resolvedRow });
   }
 
   const [translation] = await db
@@ -81,11 +91,11 @@ artistsApi.get("/:artistId", async (c) => {
   return c.json({
     artist: translation
       ? {
-          ...row,
-          name: translation.name ?? row.name,
-          bio: translation.bio ?? row.bio,
+          ...resolvedRow,
+          name: translation.name ?? resolvedRow.name,
+          bio: translation.bio ?? resolvedRow.bio,
         }
-      : row,
+      : resolvedRow,
   });
 });
 

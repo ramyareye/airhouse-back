@@ -8,6 +8,7 @@ import { Hono } from "hono";
 
 import * as authSchema from "../../auth-schema";
 import artistsApi from "../routes/api/artists";
+import contentApi from "../routes/api/content";
 import schedulesApi from "../routes/api/schedules";
 import usersApi from "../routes/api/users";
 import venuesApi from "../routes/api/venues";
@@ -100,6 +101,7 @@ app.route("/api/users", usersApi);
 app.route("/api/artists", artistsApi);
 app.route("/api/venues", venuesApi);
 app.route("/api/schedules", schedulesApi);
+app.route("/api/content", contentApi);
 
 app.onError(errorHandler);
 app.notFound(notFound);
