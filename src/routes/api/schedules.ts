@@ -1,25 +1,16 @@
 import { and, asc, eq, gte, inArray, lte } from "drizzle-orm";
 import { Hono } from "hono";
 import { getDb } from "../../db/client";
-import {
-  artists,
-  artistTranslations,
-  scheduleArtists,
-  schedules,
-  scheduleTranslations,
-  venues,
-  venueTranslations,
-} from "../../db/schema";
-import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
+import { scheduleArtists, schedules, scheduleTranslations } from "../../db/schema";
 import type { Env } from "../../types/env";
 import { cachePublic } from "../middlewares/cache.middlewares";
 
 const schedulesApi = new Hono<{ Bindings: Env }>();
 schedulesApi.use("/*", cachePublic());
+const SUPPORTED_LOCALES = ["en", "ko"] as const;
 
 schedulesApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
   const venueId = c.req.query("venueId")?.trim();
   const artistId = c.req.query("artistId")?.trim();
   const from = c.req.query("from")?.trim();
@@ -35,7 +26,7 @@ schedulesApi.get("/", async (c) => {
 
   const filteredScheduleIds = artistScheduleIds?.map((row) => row.scheduleId) ?? null;
   if (filteredScheduleIds && filteredScheduleIds.length === 0) {
-    return c.json({ schedules: [] });
+    return c.json({ locales: SUPPORTED_LOCALES, schedules: [] });
   }
 
   const where = and(
@@ -46,215 +37,101 @@ schedulesApi.get("/", async (c) => {
     filteredScheduleIds ? inArray(schedules.id, filteredScheduleIds) : undefined,
   );
 
-  const events = await db
-    .select({
-      id: schedules.id,
-      slug: schedules.slug,
-      title: schedules.title,
-      description: schedules.description,
-      startsAt: schedules.startsAt,
-      endsAt: schedules.endsAt,
-      venue: {
-        id: venues.id,
-        name: venues.name,
-        slug: venues.slug,
-      },
-    })
+  const rows = await db
+    .select()
     .from(schedules)
-    .innerJoin(venues, eq(venues.id, schedules.venueId))
     .where(where)
     .orderBy(asc(schedules.startsAt))
     .limit(limit);
-
-  const scheduleIds = events.map((event) => event.id);
-  const venueIds = events.map((event) => event.venue.id);
-
-  const links = scheduleIds.length
-    ? await db
-        .select({
-          scheduleId: scheduleArtists.scheduleId,
-          artistId: artists.id,
-          artistName: artists.name,
-          artistSlug: artists.slug,
-        })
-        .from(scheduleArtists)
-        .innerJoin(artists, eq(artists.id, scheduleArtists.artistId))
-        .where(inArray(scheduleArtists.scheduleId, scheduleIds))
-    : [];
-
-  const artistsBySchedule = new Map<string, Array<{ id: string; name: string; slug: string }>>();
-
-  for (const link of links) {
-    const current = artistsBySchedule.get(link.scheduleId) ?? [];
-    current.push({
-      id: link.artistId,
-      name: link.artistName,
-      slug: link.artistSlug,
-    });
-    artistsBySchedule.set(link.scheduleId, current);
-  }
-
-  if (locale === DEFAULT_LOCALE) {
-    return c.json({
-      schedules: events.map((event) => ({
-        ...event,
-        artists: artistsBySchedule.get(event.id) ?? [],
-      })),
-    });
-  }
-
-  const [scheduleI18n, venueI18n, artistI18n] = await Promise.all([
+  const scheduleIds = rows.map((row) => row.id);
+  const [koRows, scheduleArtistRows] = await Promise.all([
     scheduleIds.length
       ? db
           .select()
           .from(scheduleTranslations)
           .where(
             and(
-              eq(scheduleTranslations.locale, locale),
+              eq(scheduleTranslations.locale, "ko"),
               inArray(scheduleTranslations.scheduleId, scheduleIds),
             ),
           )
       : Promise.resolve([]),
-    venueIds.length
-      ? db
-          .select()
-          .from(venueTranslations)
-          .where(
-            and(eq(venueTranslations.locale, locale), inArray(venueTranslations.venueId, venueIds)),
-          )
-      : Promise.resolve([]),
-    links.length
-      ? db
-          .select()
-          .from(artistTranslations)
-          .where(
-            and(
-              eq(artistTranslations.locale, locale),
-              inArray(
-                artistTranslations.artistId,
-                links.map((link) => link.artistId),
-              ),
-            ),
-          )
+    scheduleIds.length
+      ? db.select().from(scheduleArtists).where(inArray(scheduleArtists.scheduleId, scheduleIds))
       : Promise.resolve([]),
   ]);
-
-  const scheduleI18nById = new Map(
-    scheduleI18n.map((translation) => [translation.scheduleId, translation]),
-  );
-  const venueI18nById = new Map(venueI18n.map((translation) => [translation.venueId, translation]));
-  const artistI18nById = new Map(
-    artistI18n.map((translation) => [translation.artistId, translation]),
-  );
+  const koByScheduleId = new Map(koRows.map((row) => [row.scheduleId, row]));
+  const artistIdsByScheduleId = new Map<string, string[]>();
+  for (const row of scheduleArtistRows) {
+    const current = artistIdsByScheduleId.get(row.scheduleId) ?? [];
+    current.push(row.artistId);
+    artistIdsByScheduleId.set(row.scheduleId, current);
+  }
 
   return c.json({
-    schedules: events.map((event) => ({
-      ...event,
-      title: scheduleI18nById.get(event.id)?.title ?? event.title,
-      description: scheduleI18nById.get(event.id)?.description ?? event.description,
-      venue: {
-        ...event.venue,
-        name: venueI18nById.get(event.venue.id)?.name ?? event.venue.name,
-      },
-      artists: (artistsBySchedule.get(event.id) ?? []).map((artist) => ({
-        ...artist,
-        name: artistI18nById.get(artist.id)?.name ?? artist.name,
-      })),
-    })),
+    locales: SUPPORTED_LOCALES,
+    schedules: rows.map((row) => {
+      const ko = koByScheduleId.get(row.id);
+      const { title, description, ...base } = row;
+      return {
+        ...base,
+        artistIds: artistIdsByScheduleId.get(row.id) ?? [],
+        localized: {
+          en: {
+            title,
+            description,
+          },
+          ko: {
+            title: ko?.title ?? title,
+            description: ko?.description ?? description,
+          },
+        },
+      };
+    }),
   });
 });
 
 schedulesApi.get("/:scheduleId", async (c) => {
   const scheduleId = c.req.param("scheduleId");
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
 
-  const [event] = await db
-    .select({
-      id: schedules.id,
-      slug: schedules.slug,
-      title: schedules.title,
-      description: schedules.description,
-      startsAt: schedules.startsAt,
-      endsAt: schedules.endsAt,
-      venue: {
-        id: venues.id,
-        name: venues.name,
-        slug: venues.slug,
-      },
-    })
+  const [row] = await db
+    .select()
     .from(schedules)
-    .innerJoin(venues, eq(venues.id, schedules.venueId))
     .where(and(eq(schedules.id, scheduleId), eq(schedules.isPublished, true)))
     .limit(1);
 
-  if (!event) {
+  if (!row) {
     return c.json({ error: "Schedule not found" }, 404);
   }
 
-  const linkedArtists = await db
-    .select({
-      id: artists.id,
-      name: artists.name,
-      slug: artists.slug,
-    })
-    .from(scheduleArtists)
-    .innerJoin(artists, eq(artists.id, scheduleArtists.artistId))
-    .where(eq(scheduleArtists.scheduleId, scheduleId))
-    .orderBy(asc(artists.name));
-
-  if (locale === DEFAULT_LOCALE) {
-    return c.json({ schedule: { ...event, artists: linkedArtists } });
-  }
-
-  const [scheduleI18n, venueI18n, artistI18n] = await Promise.all([
+  const [[ko], scheduleArtistRows] = await Promise.all([
     db
       .select()
       .from(scheduleTranslations)
       .where(
-        and(eq(scheduleTranslations.scheduleId, event.id), eq(scheduleTranslations.locale, locale)),
+        and(eq(scheduleTranslations.scheduleId, row.id), eq(scheduleTranslations.locale, "ko")),
       )
       .limit(1),
-    db
-      .select()
-      .from(venueTranslations)
-      .where(
-        and(eq(venueTranslations.venueId, event.venue.id), eq(venueTranslations.locale, locale)),
-      )
-      .limit(1),
-    linkedArtists.length
-      ? db
-          .select()
-          .from(artistTranslations)
-          .where(
-            and(
-              eq(artistTranslations.locale, locale),
-              inArray(
-                artistTranslations.artistId,
-                linkedArtists.map((artist) => artist.id),
-              ),
-            ),
-          )
-      : Promise.resolve([]),
+    db.select().from(scheduleArtists).where(eq(scheduleArtists.scheduleId, row.id)),
   ]);
-
-  const artistI18nById = new Map(
-    artistI18n.map((translation) => [translation.artistId, translation]),
-  );
+  const { title, description, ...base } = row;
 
   return c.json({
+    locales: SUPPORTED_LOCALES,
     schedule: {
-      ...event,
-      title: scheduleI18n[0]?.title ?? event.title,
-      description: scheduleI18n[0]?.description ?? event.description,
-      venue: {
-        ...event.venue,
-        name: venueI18n[0]?.name ?? event.venue.name,
+      ...base,
+      artistIds: scheduleArtistRows.map((link) => link.artistId),
+      localized: {
+        en: {
+          title,
+          description,
+        },
+        ko: {
+          title: ko?.title ?? title,
+          description: ko?.description ?? description,
+        },
       },
-      artists: linkedArtists.map((artist) => ({
-        ...artist,
-        name: artistI18nById.get(artist.id)?.name ?? artist.name,
-      })),
     },
   });
 });

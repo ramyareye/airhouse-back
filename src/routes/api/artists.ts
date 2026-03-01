@@ -2,17 +2,16 @@ import { and, asc, eq, ilike, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { getDb } from "../../db/client";
 import { artists, artistTranslations } from "../../db/schema";
-import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import { resolveFeaturedImageUrl } from "../../lib/media";
 import type { Env } from "../../types/env";
 import { cachePublic } from "../middlewares/cache.middlewares";
 
 const artistsApi = new Hono<{ Bindings: Env }>();
 artistsApi.use("/*", cachePublic());
+const SUPPORTED_LOCALES = ["en", "ko"] as const;
 
 artistsApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
   const q = c.req.query("q")?.trim();
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 50, 1), 200);
 
@@ -21,38 +20,42 @@ artistsApi.get("/", async (c) => {
   const rows = await db.select().from(artists).where(where).orderBy(asc(artists.name)).limit(limit);
   const resolvedRows = rows.map((row) => ({
     ...row,
+    imageUrl: resolveFeaturedImageUrl(row.imageUrl),
     featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
   }));
-
-  if (locale === DEFAULT_LOCALE || rows.length === 0) {
-    return c.json({ artists: resolvedRows });
-  }
-
-  const translations = await db
-    .select()
-    .from(artistTranslations)
-    .where(
-      and(
-        eq(artistTranslations.locale, locale),
-        inArray(
-          artistTranslations.artistId,
-          rows.map((row) => row.id),
-        ),
-      ),
-    );
-
-  const translationsByArtistId = new Map(
-    translations.map((translation) => [translation.artistId, translation]),
-  );
+  const koRows = rows.length
+    ? await db
+        .select()
+        .from(artistTranslations)
+        .where(
+          and(
+            eq(artistTranslations.locale, "ko"),
+            inArray(
+              artistTranslations.artistId,
+              rows.map((row) => row.id),
+            ),
+          ),
+        )
+    : [];
+  const koByArtistId = new Map(koRows.map((row) => [row.artistId, row]));
 
   return c.json({
+    locales: SUPPORTED_LOCALES,
     artists: resolvedRows.map((row) => {
-      const translation = translationsByArtistId.get(row.id);
-      if (!translation) return row;
+      const ko = koByArtistId.get(row.id);
+      const { name, bio, ...base } = row;
       return {
-        ...row,
-        name: translation.name ?? row.name,
-        bio: translation.bio ?? row.bio,
+        ...base,
+        localized: {
+          en: {
+            name,
+            bio,
+          },
+          ko: {
+            name: ko?.name ?? name,
+            bio: ko?.bio ?? bio,
+          },
+        },
       };
     }),
   });
@@ -61,7 +64,6 @@ artistsApi.get("/", async (c) => {
 artistsApi.get("/:artistId", async (c) => {
   const artistId = c.req.param("artistId");
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
 
   const [row] = await db
     .select()
@@ -75,27 +77,33 @@ artistsApi.get("/:artistId", async (c) => {
 
   const resolvedRow = {
     ...row,
+    imageUrl: resolveFeaturedImageUrl(row.imageUrl),
     featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
   };
 
-  if (locale === DEFAULT_LOCALE) {
-    return c.json({ artist: resolvedRow });
-  }
-
-  const [translation] = await db
+  const [ko] = await db
     .select()
     .from(artistTranslations)
-    .where(and(eq(artistTranslations.artistId, row.id), eq(artistTranslations.locale, locale)))
+    .where(and(eq(artistTranslations.artistId, row.id), eq(artistTranslations.locale, "ko")))
     .limit(1);
 
+  const { name, bio, ...base } = resolvedRow;
+
   return c.json({
-    artist: translation
-      ? {
-          ...resolvedRow,
-          name: translation.name ?? resolvedRow.name,
-          bio: translation.bio ?? resolvedRow.bio,
-        }
-      : resolvedRow,
+    locales: SUPPORTED_LOCALES,
+    artist: {
+      ...base,
+      localized: {
+        en: {
+          name,
+          bio,
+        },
+        ko: {
+          name: ko?.name ?? name,
+          bio: ko?.bio ?? bio,
+        },
+      },
+    },
   });
 });
 

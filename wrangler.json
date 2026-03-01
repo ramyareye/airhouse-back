@@ -9,13 +9,20 @@
   "upload_source_maps": true,
   "vars": {
     "BETTER_AUTH_URL": "https://api.airhouse.name",
-    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name"
+    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name",
+    "CONTENT_EXPORT_TOKEN": "AZDX2ON$74cE0ByAIny9z^aU^VET$Rko"
   },
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
       "id": "763afcdd7ae0400ab94d737288ff3c3f",
       "localConnectionString": "postgresql://user:password@127.0.0.1:5432/database?sslmode=require&channel_binding=require"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "CONTENT_EXPORT_BUCKET",
+      "bucket_name": "airhouse"
     }
   ]
 }

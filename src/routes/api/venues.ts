@@ -2,17 +2,16 @@ import { and, asc, eq, ilike, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { getDb } from "../../db/client";
 import { venues, venueTranslations } from "../../db/schema";
-import { DEFAULT_LOCALE, resolveLocale } from "../../lib/i18n";
 import { resolveFeaturedImageUrl } from "../../lib/media";
 import type { Env } from "../../types/env";
 import { cachePublic } from "../middlewares/cache.middlewares";
 
 const venuesApi = new Hono<{ Bindings: Env }>();
 venuesApi.use("/*", cachePublic());
+const SUPPORTED_LOCALES = ["en", "ko"] as const;
 
 venuesApi.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
   const q = c.req.query("q")?.trim();
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 50, 1), 200);
 
@@ -21,39 +20,44 @@ venuesApi.get("/", async (c) => {
   const rows = await db.select().from(venues).where(where).orderBy(asc(venues.name)).limit(limit);
   const resolvedRows = rows.map((row) => ({
     ...row,
+    imageUrl: resolveFeaturedImageUrl(row.imageUrl),
+    logoUrl: resolveFeaturedImageUrl(row.logoUrl),
     featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
     featuredLogoUrl: resolveFeaturedImageUrl(row.logoUrl),
   }));
-
-  if (locale === DEFAULT_LOCALE || rows.length === 0) {
-    return c.json({ venues: resolvedRows });
-  }
-
-  const translations = await db
-    .select()
-    .from(venueTranslations)
-    .where(
-      and(
-        eq(venueTranslations.locale, locale),
-        inArray(
-          venueTranslations.venueId,
-          rows.map((row) => row.id),
-        ),
-      ),
-    );
-
-  const translationsByVenueId = new Map(
-    translations.map((translation) => [translation.venueId, translation]),
-  );
+  const koRows = rows.length
+    ? await db
+        .select()
+        .from(venueTranslations)
+        .where(
+          and(
+            eq(venueTranslations.locale, "ko"),
+            inArray(
+              venueTranslations.venueId,
+              rows.map((row) => row.id),
+            ),
+          ),
+        )
+    : [];
+  const koByVenueId = new Map(koRows.map((row) => [row.venueId, row]));
 
   return c.json({
+    locales: SUPPORTED_LOCALES,
     venues: resolvedRows.map((row) => {
-      const translation = translationsByVenueId.get(row.id);
-      if (!translation) return row;
+      const ko = koByVenueId.get(row.id);
+      const { name, description, ...base } = row;
       return {
-        ...row,
-        name: translation.name ?? row.name,
-        description: translation.description ?? row.description,
+        ...base,
+        localized: {
+          en: {
+            name,
+            description,
+          },
+          ko: {
+            name: ko?.name ?? name,
+            description: ko?.description ?? description,
+          },
+        },
       };
     }),
   });
@@ -62,7 +66,6 @@ venuesApi.get("/", async (c) => {
 venuesApi.get("/:venueId", async (c) => {
   const venueId = c.req.param("venueId");
   const db = getDb(c.env.DATABASE_URL);
-  const locale = resolveLocale(c);
 
   const [row] = await db
     .select()
@@ -76,28 +79,35 @@ venuesApi.get("/:venueId", async (c) => {
 
   const resolvedRow = {
     ...row,
+    imageUrl: resolveFeaturedImageUrl(row.imageUrl),
+    logoUrl: resolveFeaturedImageUrl(row.logoUrl),
     featuredImageUrl: resolveFeaturedImageUrl(row.imageUrl),
     featuredLogoUrl: resolveFeaturedImageUrl(row.logoUrl),
   };
 
-  if (locale === DEFAULT_LOCALE) {
-    return c.json({ venue: resolvedRow });
-  }
-
-  const [translation] = await db
+  const [ko] = await db
     .select()
     .from(venueTranslations)
-    .where(and(eq(venueTranslations.venueId, row.id), eq(venueTranslations.locale, locale)))
+    .where(and(eq(venueTranslations.venueId, row.id), eq(venueTranslations.locale, "ko")))
     .limit(1);
 
+  const { name, description, ...base } = resolvedRow;
+
   return c.json({
-    venue: translation
-      ? {
-          ...resolvedRow,
-          name: translation.name ?? resolvedRow.name,
-          description: translation.description ?? resolvedRow.description,
-        }
-      : resolvedRow,
+    locales: SUPPORTED_LOCALES,
+    venue: {
+      ...base,
+      localized: {
+        en: {
+          name,
+          description,
+        },
+        ko: {
+          name: ko?.name ?? name,
+          description: ko?.description ?? description,
+        },
+      },
+    },
   });
 });
 

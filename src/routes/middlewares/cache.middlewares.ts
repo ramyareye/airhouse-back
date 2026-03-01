@@ -1,5 +1,4 @@
 import type { MiddlewareHandler } from "hono";
-import { resolveLocale } from "../../lib/i18n";
 import type { Env } from "../../types/env";
 
 type CacheOptions = {
@@ -24,23 +23,6 @@ export const setCacheVersionOverride = (value: string | null) => {
 };
 
 const getCacheVersion = (env: Env) => cacheVersionOverride ?? env.CACHE_VERSION ?? "1";
-
-const updateVary = (headers: Headers, value: string) => {
-  const current = headers.get("vary");
-  if (!current) {
-    headers.set("Vary", value);
-    return;
-  }
-
-  const values = new Set(
-    current
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean),
-  );
-  values.add(value);
-  headers.set("Vary", Array.from(values).join(", "));
-};
 
 const extractCookieNames = (cookieHeader: string): string[] =>
   cookieHeader
@@ -96,7 +78,6 @@ export const cachePublic =
     const cache = (caches as CacheStorage & { default: Cache }).default;
     const cacheKeyUrl = new URL(c.req.url);
     cacheKeyUrl.searchParams.set("__cv", getCacheVersion(c.env));
-    cacheKeyUrl.searchParams.set("__lang", resolveLocale(c));
     const cacheKey = new Request(cacheKeyUrl.toString(), { method: "GET" });
 
     let cached: Response | undefined;
@@ -109,8 +90,6 @@ export const cachePublic =
     if (cached) {
       const headers = new Headers(cached.headers);
       headers.set("X-Worker-Cache", "HIT");
-      updateVary(headers, "Accept-Language");
-      updateVary(headers, "X-Lang");
       return new Response(cached.body, {
         status: cached.status,
         statusText: cached.statusText,
@@ -131,8 +110,6 @@ export const cachePublic =
     const swrTtl = options.staleWhileRevalidateSeconds ?? DEFAULT_SWR_TTL;
 
     res.headers.set("X-Worker-Cache", "MISS");
-    updateVary(res.headers, "Accept-Language");
-    updateVary(res.headers, "X-Lang");
     if (!res.headers.has("cache-control")) {
       res.headers.set(
         "Cache-Control",
