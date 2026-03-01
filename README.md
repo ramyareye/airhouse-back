@@ -13,8 +13,29 @@ Cloudflare Worker API for Airhouse Festival v1.
 - `GET /api/artists`
 - `GET /api/venues`
 - `GET /api/schedules`
+- `GET /api/content/all`
+- `POST /api/content/export`
 - `ALL /api/auth/*`
 - `GET /api/users/me`
+
+## Content Export
+Trigger a content snapshot export to R2:
+
+```bash
+curl -X POST "https://api.airhouse.name/api/content/export" \
+  -H "Authorization: Bearer $CONTENT_EXPORT_TOKEN"
+```
+
+Required bindings:
+- `CONTENT_EXPORT_BUCKET` as an `r2_buckets` binding (not `vars`/secret)
+- `CONTENT_EXPORT_TOKEN` as a secret
+- optional `CONTENT_EXPORT_PREFIX` in `vars` (default: `content-exports`)
+
+Export writes plain JSON files for `artists`, `venues`, and `schedules`:
+- latest alias: `name.json`
+- day alias: `name-YYYY-MM-DD.json`
+- backup path: `backups/<timestamp>/name.json`
+- backup + day alias: `backups/<timestamp>/name-YYYY-MM-DD.json`
 
 ## 1. Install
 ```bash

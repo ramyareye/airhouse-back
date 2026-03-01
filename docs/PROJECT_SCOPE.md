@@ -5,6 +5,7 @@ This backend is now scoped to:
 - Artists (`/api/artists`)
 - Venues (`/api/venues`)
 - Schedules (`/api/schedules`)
+- Content snapshot/export (`/api/content/all`, `/api/content/export`)
 
 Removed from this repo in v1 cleanup:
 - Legacy commerce flow (orders, bundles, stripe, vouchers)
