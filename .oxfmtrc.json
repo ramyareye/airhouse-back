@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "ignorePatterns": [
+    ".agents/**",
+    ".wrangler/**",
+    "AGENTS.md",
+    "dist/**",
+    "db-schema/**",
+    "docs/**",
+    ".vscode/**",
+    "README.md",
+    "all.json",
+    "worker-configuration.d.ts"
+  ]
+}

@@ -6,4 +6,3 @@ export function resolveFeaturedImageUrl(url: string | null) {
   const normalized = url.startsWith("/") ? url.slice(1) : url;
   return `${R2_BASE_URL}/${normalized}`;
 }
-

@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "node_modules/**",
+    ".wrangler/**",
+    "dist/**",
+    "db-schema/**",
+    ".vscode/**",
+    "worker-configuration.d.ts"
+  ]
+}

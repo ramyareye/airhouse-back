@@ -17,7 +17,38 @@ import type { Env } from "../types/env";
 
 const app = new Hono<{ Bindings: Env }>();
 
-let cachedAuth: ReturnType<typeof betterAuth> | null = null;
+const initAuth = (env: Env) => {
+  const sql = neon(env.DATABASE_URL);
+  const db = drizzle(sql, { schema: authSchema });
+
+  return betterAuth({
+    database: drizzleAdapter(db, {
+      provider: "pg",
+      schema: authSchema,
+    }),
+    user: {
+      modelName: "user",
+    },
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 8,
+    },
+    plugins: [bearer()],
+    rateLimit: {
+      enabled: true,
+      window: 60,
+      max: 20,
+      storage: "database",
+    },
+    trustedOrigins: buildTrustedOrigins(env),
+    baseURL: env.BETTER_AUTH_URL,
+    secret: env.BETTER_AUTH_SECRET,
+  });
+};
+
+type AuthInstance = ReturnType<typeof initAuth>;
+
+let cachedAuth: AuthInstance | null = null;
 let cachedAuthKey: string | null = null;
 
 const parseOrigin = (value?: string | null): string | null => {
@@ -52,39 +83,13 @@ const buildAuthCacheKey = (env: Env) =>
     env.AUTH_TRUSTED_ORIGINS ?? "",
   ].join("|");
 
-export function createAuth(env: Env) {
+export function createAuth(env: Env): AuthInstance {
   const cacheKey = buildAuthCacheKey(env);
   if (cachedAuth && cachedAuthKey === cacheKey) {
     return cachedAuth;
   }
 
-  const sql = neon(env.DATABASE_URL);
-  const db = drizzle(sql, { schema: authSchema });
-
-  cachedAuth = betterAuth({
-    database: drizzleAdapter(db, {
-      provider: "pg",
-      schema: authSchema,
-    }),
-    user: {
-      modelName: "user",
-    },
-    emailAndPassword: {
-      enabled: true,
-      minPasswordLength: 8,
-    },
-    plugins: [bearer()],
-    rateLimit: {
-      enabled: true,
-      window: 60,
-      max: 20,
-      storage: "database",
-    },
-    trustedOrigins: buildTrustedOrigins(env),
-    baseURL: env.BETTER_AUTH_URL,
-    secret: env.BETTER_AUTH_SECRET,
-  });
-
+  cachedAuth = initAuth(env);
   cachedAuthKey = cacheKey;
   return cachedAuth;
 }
