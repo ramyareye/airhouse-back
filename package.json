@@ -11,6 +11,8 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "check": "bun run lint && bun run format:check",
+    "db:migrate:local": "bash ./scripts/run-migrations.sh --env-file .dev.vars",
+    "db:migrate:remote": "bash ./scripts/run-migrations.sh",
     "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",

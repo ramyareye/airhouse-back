@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS "user" (
   "name" text NOT NULL,
   "email" text NOT NULL UNIQUE,
   "email_verified" boolean NOT NULL DEFAULT false,
+  "phone_number" text UNIQUE,
+  "phone_number_verified" boolean NOT NULL DEFAULT false,
   "image" text,
   "created_at" timestamp NOT NULL DEFAULT now(),
   "updated_at" timestamp NOT NULL DEFAULT now()

@@ -18,6 +18,8 @@ usersApi.get("/me", async (c: AuthContext) => {
       name: user.name,
       email: user.email,
       emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      phoneNumberVerified: user.phoneNumberVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     })

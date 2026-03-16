@@ -6,6 +6,8 @@ export type AuthUser = {
   email?: string;
   name?: string | null;
   emailVerified?: boolean;
+  phoneNumber?: string | null;
+  phoneNumberVerified?: boolean;
   image?: string | null;
 };
 

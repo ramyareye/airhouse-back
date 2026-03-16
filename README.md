@@ -18,6 +18,12 @@ Cloudflare Worker API for Airhouse Festival v1.
 - `ALL /api/auth/*`
 - `GET /api/users/me`
 
+## Auth Flows
+- Email/password sign up and sign in via Better Auth
+- Email verification and password reset via Resend when enabled
+- Phone number OTP verification, phone sign-in, and phone password reset via Twilio when enabled
+- Google and Apple OAuth can be enabled later by setting provider credentials
+
 ## Content Export
 Trigger a content snapshot export to R2:
 
@@ -53,6 +59,13 @@ Put credentials in `.dev.vars`:
 - `BETTER_AUTH_SECRET` (long random secret)
 - `BETTER_AUTH_URL` (local or public API URL)
 - `AUTH_TRUSTED_ORIGINS` (comma-separated web origins)
+- `EMAIL_VERIFICATION_ENABLED` / `REQUIRE_EMAIL_VERIFICATION` (`0` or `1`)
+- `RESEND_API_KEY` + `EMAIL_FROM` for verification and reset emails
+- `PHONE_AUTH_ENABLED` / `PHONE_AUTH_REQUIRE_VERIFICATION` (`0` or `1`)
+- `TWILIO_ACCOUNT_SID` + `TWILIO_AUTH_TOKEN` + `TWILIO_FROM_PHONE_NUMBER` for SMS OTP delivery
+- `GOOGLE_OAUTH_CLIENT_ID` + `GOOGLE_OAUTH_CLIENT_SECRET` for Google login
+- `APPLE_OAUTH_CLIENT_ID` + `APPLE_OAUTH_CLIENT_SECRET` for Apple login
+- `APPLE_OAUTH_APP_BUNDLE_IDENTIFIER` for native Apple ID token verification later
 - `SENTRY_DSN` (optional)
 
 Example local values:
@@ -61,6 +74,20 @@ DATABASE_URL=postgresql://user:password@host:5432/db?sslmode=require&channel_bin
 BETTER_AUTH_SECRET=replace-with-long-random-secret
 BETTER_AUTH_URL=http://127.0.0.1:8787
 AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+EMAIL_VERIFICATION_ENABLED=0
+REQUIRE_EMAIL_VERIFICATION=0
+RESEND_API_KEY=
+EMAIL_FROM=
+PHONE_AUTH_ENABLED=0
+PHONE_AUTH_REQUIRE_VERIFICATION=1
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_FROM_PHONE_NUMBER=
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+APPLE_OAUTH_CLIENT_ID=
+APPLE_OAUTH_CLIENT_SECRET=
+APPLE_OAUTH_APP_BUNDLE_IDENTIFIER=
 SENTRY_DSN=
 ```
 
@@ -73,6 +100,25 @@ psql "$DATABASE_URL" -f drizzle/0000_initial.sql
 This creates:
 - Better Auth tables: `user`, `session`, `account`, `verification`, `rate_limit`
 - Festival tables: `artists`, `venues`, `schedules`, `schedule_artists`
+
+The auth bootstrap now includes `user.phone_number` and `user.phone_number_verified` for phone-based flows.
+
+If your database already exists, apply the forward migration too:
+```bash
+psql "$DATABASE_URL" -f drizzle/0001_auth_phone_columns.sql
+```
+
+Or use the repo migration runner instead:
+```bash
+bun run db:migrate:local
+```
+
+For remote/prod, provide the target database URL explicitly:
+```bash
+DATABASE_URL='postgresql://...' bun run db:migrate:remote
+```
+
+The runner applies `drizzle/*.sql` in order and records applied files in `schema_migrations`.
 
 ## 4. Run Local Worker
 ```bash
