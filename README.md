@@ -24,6 +24,9 @@ Cloudflare Worker API for Airhouse Festival v1.
 - Phone number OTP verification, phone sign-in, and phone password reset via Twilio when enabled
 - Google and Apple OAuth can be enabled later by setting provider credentials
 
+Detailed auth contract, app wiring, and current gaps:
+- `../docs/auth.md`
+
 ## Content Export
 Trigger a content snapshot export to R2:
 

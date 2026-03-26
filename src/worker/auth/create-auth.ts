@@ -32,6 +32,9 @@ const initAuth = (env: Env) => {
     }),
     user: {
       modelName: "user",
+      deleteUser: {
+        enabled: true,
+      },
     },
     emailAndPassword: buildEmailAndPasswordOptions(env, flags),
     emailVerification: buildEmailVerificationOptions(env, flags),
