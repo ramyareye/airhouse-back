@@ -12,6 +12,7 @@ import {
   scheduleCategories,
   schedules,
   scheduleTranslations,
+  userSchedules,
   venueArtists,
   venueHierarchy,
   venuePolygons,
@@ -36,6 +37,7 @@ export const schedulesRelations = relations(schedules, ({ one, many }) => ({
   translations: many(scheduleTranslations),
   artistLinks: many(scheduleArtists),
   categoryLinks: many(scheduleCategories),
+  userScheduleLinks: many(userSchedules),
 }));
 
 export const artistsRelations = relations(artists, ({ many }) => ({
@@ -112,6 +114,13 @@ export const scheduleCategoriesRelations = relations(scheduleCategories, ({ one 
   category: one(artistCategories, {
     fields: [scheduleCategories.categoryId],
     references: [artistCategories.id],
+  }),
+}));
+
+export const userSchedulesRelations = relations(userSchedules, ({ one }) => ({
+  schedule: one(schedules, {
+    fields: [userSchedules.scheduleId],
+    references: [schedules.id],
   }),
 }));
 

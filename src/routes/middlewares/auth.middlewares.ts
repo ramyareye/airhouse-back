@@ -1,6 +1,19 @@
 import type { Next } from "hono";
+import { eq } from "drizzle-orm";
+import { user } from "../../../auth-schema";
+import { getDb } from "../../db/client";
 import type { AuthContext } from "../../types/auth";
 import { createAuth } from "../../worker/index";
+import {
+  emailNotVerifiedResponse,
+  hasVerifiedEmail,
+  requiresVerifiedEmail,
+} from "../../worker/auth/verification";
+
+export {
+  EMAIL_NOT_VERIFIED_CODE,
+  emailNotVerifiedResponse,
+} from "../../worker/auth/verification";
 
 export const buildAuthHeaders = (c: AuthContext) => {
   const headers = new Headers(c.req.raw.headers);
@@ -34,4 +47,32 @@ export const protect = async (c: AuthContext, next: Next) => {
   c.set("user", session.user);
   c.set("session", session.session);
   await next();
+};
+
+export const requireVerifiedUser = async (c: AuthContext, next: Next) => {
+  const currentUser = c.get("user");
+
+  if (!requiresVerifiedEmail(currentUser)) {
+    await next();
+    return;
+  }
+
+  if (hasVerifiedEmail(currentUser)) {
+    await next();
+    return;
+  }
+
+  const db = getDb(c.env.DATABASE_URL);
+  const [dbUser] = await db
+    .select({ emailVerified: user.emailVerified })
+    .from(user)
+    .where(eq(user.id, currentUser.id))
+    .limit(1);
+
+  if (dbUser?.emailVerified === true) {
+    await next();
+    return;
+  }
+
+  return c.json(emailNotVerifiedResponse, 403);
 };

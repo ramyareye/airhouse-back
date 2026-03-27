@@ -14,6 +14,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import { user as authUser } from "../../auth-schema";
 
 export const scheduleTypeEnum = pgEnum("schedule_type_enum", [
   "normal",
@@ -232,6 +233,29 @@ export const scheduleCategories = pgTable(
       name: "schedule_categories_pk",
     }),
     index("schedule_categories_category_id_idx").on(table.categoryId),
+  ],
+);
+
+export const userSchedules = pgTable(
+  "user_schedules",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => authUser.id, { onDelete: "cascade" }),
+    scheduleId: uuid("schedule_id")
+      .notNull()
+      .references(() => schedules.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.scheduleId],
+      name: "user_schedules_pk",
+    }),
+    index("user_schedules_user_id_idx").on(table.userId),
+    index("user_schedules_schedule_id_idx").on(table.scheduleId),
   ],
 );
 
