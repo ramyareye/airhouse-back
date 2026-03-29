@@ -2,6 +2,8 @@ export type Env = {
   CF_VERSION_METADATA?: { id: string };
   DATABASE_URL: string;
   CACHE_VERSION?: string;
+  CACHE_PURGE_TOKEN?: string;
+  OPS_ALLOWED_IPS?: string;
   CONTENT_EXPORT_BUCKET?: R2Bucket;
   CONTENT_EXPORT_PREFIX?: string;
   CONTENT_EXPORT_TOKEN?: string;
@@ -24,5 +26,6 @@ export type Env = {
   APPLE_OAUTH_CLIENT_ID?: string;
   APPLE_OAUTH_CLIENT_SECRET?: string;
   APPLE_OAUTH_APP_BUNDLE_IDENTIFIER?: string;
+  PUBLIC_API_DOCS_ENABLED?: string;
   SENTRY_DSN?: string;
 };

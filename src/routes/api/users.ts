@@ -1,13 +1,19 @@
 import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
+import { z } from "zod";
 import { user } from "../../../auth-schema";
 import { getDb } from "../../db/client";
 import { schedules, userSchedules } from "../../db/schema";
 import type { AuthBindings, AuthContext } from "../../types/auth";
 import { protect, requireVerifiedUser } from "../middlewares/auth.middlewares";
+import { validateJsonBody } from "../middlewares/validation.middlewares";
 
 const usersApi = new Hono<AuthBindings>();
 usersApi.use("/*", protect);
+
+const saveScheduleBodySchema = z.object({
+  scheduleId: z.string().trim().min(1, "scheduleId is required"),
+});
 
 // Keep /me available to signed-in but unverified users so the app can
 // surface verification status and offer resend / refresh actions.
@@ -49,10 +55,7 @@ usersApi.get("/me/schedules", async (c: AuthContext) => {
     .from(userSchedules)
     .innerJoin(
       schedules,
-      and(
-        eq(userSchedules.scheduleId, schedules.id),
-        eq(schedules.isPublished, true),
-      ),
+      and(eq(userSchedules.scheduleId, schedules.id), eq(schedules.isPublished, true)),
     )
     .where(eq(userSchedules.userId, sessionUser.id))
     .orderBy(desc(userSchedules.createdAt));
@@ -65,12 +68,48 @@ usersApi.get("/me/schedules", async (c: AuthContext) => {
   });
 });
 
-usersApi.post("/me/schedules", requireVerifiedUser, async (c: AuthContext) => {
+usersApi.post(
+  "/me/schedules",
+  requireVerifiedUser,
+  validateJsonBody(saveScheduleBodySchema),
+  async (c: AuthContext) => {
+    const sessionUser = c.get("user");
+    const { scheduleId } = c.get("validatedBody") as z.infer<typeof saveScheduleBodySchema>;
+
+    const db = getDb(c.env.DATABASE_URL);
+    const [schedule] = await db
+      .select({ id: schedules.id })
+      .from(schedules)
+      .where(and(eq(schedules.id, scheduleId), eq(schedules.isPublished, true)))
+      .limit(1);
+
+    if (!schedule) {
+      return c.json(
+        {
+          error: "Schedule not found",
+        },
+        404,
+      );
+    }
+
+    await db
+      .insert(userSchedules)
+      .values({
+        scheduleId,
+        userId: sessionUser.id,
+      })
+      .onConflictDoNothing();
+
+    return c.json({
+      saved: true,
+      scheduleId,
+    });
+  },
+);
+
+usersApi.delete("/me/schedules/:scheduleId", requireVerifiedUser, async (c: AuthContext) => {
   const sessionUser = c.get("user");
-  const payload = (await c.req.json().catch(() => ({}))) as {
-    scheduleId?: string;
-  };
-  const scheduleId = payload.scheduleId?.trim();
+  const scheduleId = c.req.param("scheduleId")?.trim();
 
   if (!scheduleId) {
     return c.json(
@@ -82,66 +121,14 @@ usersApi.post("/me/schedules", requireVerifiedUser, async (c: AuthContext) => {
   }
 
   const db = getDb(c.env.DATABASE_URL);
-  const [schedule] = await db
-    .select({ id: schedules.id })
-    .from(schedules)
-    .where(and(eq(schedules.id, scheduleId), eq(schedules.isPublished, true)))
-    .limit(1);
-
-  if (!schedule) {
-    return c.json(
-      {
-        error: "Schedule not found",
-      },
-      404,
-    );
-  }
-
   await db
-    .insert(userSchedules)
-    .values({
-      scheduleId,
-      userId: sessionUser.id,
-    })
-    .onConflictDoNothing();
+    .delete(userSchedules)
+    .where(and(eq(userSchedules.userId, sessionUser.id), eq(userSchedules.scheduleId, scheduleId)));
 
   return c.json({
-    saved: true,
+    saved: false,
     scheduleId,
   });
 });
-
-usersApi.delete(
-  "/me/schedules/:scheduleId",
-  requireVerifiedUser,
-  async (c: AuthContext) => {
-    const sessionUser = c.get("user");
-    const scheduleId = c.req.param("scheduleId")?.trim();
-
-    if (!scheduleId) {
-      return c.json(
-        {
-          error: "Missing scheduleId",
-        },
-        400,
-      );
-    }
-
-    const db = getDb(c.env.DATABASE_URL);
-    await db
-      .delete(userSchedules)
-      .where(
-        and(
-          eq(userSchedules.userId, sessionUser.id),
-          eq(userSchedules.scheduleId, scheduleId),
-        ),
-      );
-
-    return c.json({
-      saved: false,
-      scheduleId,
-    });
-  },
-);
 
 export default usersApi;

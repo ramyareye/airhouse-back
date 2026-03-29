@@ -139,9 +139,7 @@ describe("user schedules api", () => {
       session: { id: "session_1", userId: "user_1" },
     });
     insertOnConflictDoNothingMock.mockResolvedValue(undefined);
-    selectLimitMock.mockResolvedValueOnce([
-      { id: "6b6d2f7d-2875-4b5b-bf31-41de62b862c2" },
-    ]);
+    selectLimitMock.mockResolvedValueOnce([{ id: "6b6d2f7d-2875-4b5b-bf31-41de62b862c2" }]);
 
     const res = await usersApi.request(
       "http://localhost/me/schedules",
@@ -164,6 +162,70 @@ describe("user schedules api", () => {
       scheduleId: "6b6d2f7d-2875-4b5b-bf31-41de62b862c2",
     });
     expect(insertOnConflictDoNothingMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns 400 when the request body is invalid JSON", async () => {
+    getSessionMock.mockResolvedValue({
+      user: {
+        id: "user_1",
+        email: "verified@airhouse.name",
+        emailVerified: true,
+      },
+      session: { id: "session_1", userId: "user_1" },
+    });
+
+    const res = await usersApi.request(
+      "http://localhost/me/schedules",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer session-token",
+          "Content-Type": "application/json",
+        },
+        body: "{",
+      },
+      buildTestEnv(),
+    );
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      error: "Invalid JSON",
+    });
+  });
+
+  it("returns 400 when scheduleId is missing", async () => {
+    getSessionMock.mockResolvedValue({
+      user: {
+        id: "user_1",
+        email: "verified@airhouse.name",
+        emailVerified: true,
+      },
+      session: { id: "session_1", userId: "user_1" },
+    });
+
+    const res = await usersApi.request(
+      "http://localhost/me/schedules",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer session-token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      },
+      buildTestEnv(),
+    );
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      error: "Invalid request body",
+      details: {
+        formErrors: [],
+        fieldErrors: {
+          scheduleId: expect.any(Array),
+        },
+      },
+    });
   });
 
   it("removes a saved schedule for verified users", async () => {

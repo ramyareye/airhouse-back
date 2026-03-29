@@ -15,8 +15,7 @@ type VerificationAwareUser = {
   emailVerified?: boolean | null;
 };
 
-export const requiresVerifiedEmail = (user: VerificationAwareUser) =>
-  Boolean(user.email);
+export const requiresVerifiedEmail = (user: VerificationAwareUser) => Boolean(user.email);
 
 export const hasVerifiedEmail = (user: VerificationAwareUser) =>
   !requiresVerifiedEmail(user) || user.emailVerified === true;

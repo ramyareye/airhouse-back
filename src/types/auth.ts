@@ -18,6 +18,7 @@ export type AuthSession = {
 };
 
 export type AuthVariables = {
+  validatedBody: unknown;
   user: AuthUser;
   session: AuthSession;
 };

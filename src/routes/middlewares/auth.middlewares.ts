@@ -10,10 +10,7 @@ import {
   requiresVerifiedEmail,
 } from "../../worker/auth/verification";
 
-export {
-  EMAIL_NOT_VERIFIED_CODE,
-  emailNotVerifiedResponse,
-} from "../../worker/auth/verification";
+export { EMAIL_NOT_VERIFIED_CODE, emailNotVerifiedResponse } from "../../worker/auth/verification";
 
 export const buildAuthHeaders = (c: AuthContext) => {
   const headers = new Headers(c.req.raw.headers);
