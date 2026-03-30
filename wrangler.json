@@ -9,7 +9,7 @@
   "upload_source_maps": true,
   "vars": {
     "BETTER_AUTH_URL": "https://api.airhouse.name",
-    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name",
+    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name,airhouseapp://",
     "CONTENT_EXPORT_TOKEN": "AZDX2ON$74cE0ByAIny9z^aU^VET$Rko"
   },
   "hyperdrive": [

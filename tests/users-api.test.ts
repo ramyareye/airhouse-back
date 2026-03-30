@@ -5,7 +5,7 @@ import { buildTestEnv } from "./helpers/env";
 const getSessionMock = vi.fn();
 const limitMock = vi.fn();
 
-vi.mock("../src/worker/index", () => ({
+vi.mock("../src/worker/auth/create-auth", () => ({
   createAuth: () => ({
     api: {
       getSession: getSessionMock,

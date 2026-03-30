@@ -61,7 +61,7 @@ Put credentials in `.dev.vars`:
 - `DATABASE_URL` (Postgres connection string)
 - `BETTER_AUTH_SECRET` (long random secret)
 - `BETTER_AUTH_URL` (local or public API URL)
-- `AUTH_TRUSTED_ORIGINS` (comma-separated web origins)
+- `AUTH_TRUSTED_ORIGINS` (comma-separated trusted origins and native schemes)
 - `EMAIL_VERIFICATION_ENABLED` / `REQUIRE_EMAIL_VERIFICATION` (`0` or `1`)
 - `RESEND_API_KEY` + `EMAIL_FROM` for verification and reset emails
 - `PHONE_AUTH_ENABLED` / `PHONE_AUTH_REQUIRE_VERIFICATION` (`0` or `1`)
@@ -76,7 +76,7 @@ Example local values:
 DATABASE_URL=postgresql://user:password@host:5432/db?sslmode=require&channel_binding=require
 BETTER_AUTH_SECRET=replace-with-long-random-secret
 BETTER_AUTH_URL=http://127.0.0.1:8787
-AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,airhouseapp://
 EMAIL_VERIFICATION_ENABLED=0
 REQUIRE_EMAIL_VERIFICATION=0
 RESEND_API_KEY=

@@ -9,7 +9,14 @@ const parseOrigin = (value?: string | null): string | null => {
   if (!trimmed) return null;
 
   try {
-    return new URL(trimmed).origin;
+    const parsed = new URL(trimmed);
+    const protocol = parsed.protocol.toLowerCase();
+
+    if (protocol === "http:" || protocol === "https:") {
+      return parsed.origin;
+    }
+
+    return `${parsed.protocol}//${parsed.host}`;
   } catch {
     return null;
   }

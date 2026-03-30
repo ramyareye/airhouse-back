@@ -22,7 +22,8 @@ describe("auth config helpers", () => {
   it("builds trusted origins from auth, cors, and configured origins", () => {
     const origins = buildTrustedOrigins({
       BETTER_AUTH_URL: "https://api.airhouse.name/api/auth",
-      AUTH_TRUSTED_ORIGINS: "https://airhouse.name,invalid,https://www.airhouse.name",
+      AUTH_TRUSTED_ORIGINS:
+        "https://airhouse.name,invalid,https://www.airhouse.name,airhouseapp://,exp://127.0.0.1:8081/--/",
       CORS_ORIGIN: "https://app.airhouse.name",
     });
 
@@ -31,6 +32,8 @@ describe("auth config helpers", () => {
       "https://app.airhouse.name",
       "https://airhouse.name",
       "https://www.airhouse.name",
+      "airhouseapp://",
+      "exp://127.0.0.1:8081",
     ]);
   });
 

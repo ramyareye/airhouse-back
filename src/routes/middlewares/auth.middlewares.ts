@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { user } from "../../../auth-schema";
 import { getDb } from "../../db/client";
 import type { AuthContext } from "../../types/auth";
-import { createAuth } from "../../worker/index";
+import { createAuth } from "../../worker/auth/create-auth";
 import {
   emailNotVerifiedResponse,
   hasVerifiedEmail,
