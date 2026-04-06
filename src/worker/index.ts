@@ -10,17 +10,49 @@ import schedulesApi from "../routes/api/schedules";
 import usersApi from "../routes/api/users";
 import venuesApi from "../routes/api/venues";
 import { errorHandler, notFound } from "../routes/middlewares/error.middlewares";
+import {
+  buildAuthFeatureFlags,
+  buildWebsiteUrl,
+  buildAuthEmailCallbackUrl,
+  isPhonePasswordAuthPath,
+} from "../lib/auth-config";
 import type { Env } from "../types/env";
 import { createAuth } from "./auth/create-auth";
 import { openApiConfig, shouldExposePublicDocs } from "./docs";
 import { registerManualOpenApi } from "./openapi";
+import { renderDeleteAccount, renderPrivacyPolicy } from "./site";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-app.get("/", (c) => c.json({ service: "airhouse-festival-backend", status: "ok" }));
+app.get("/", (c) => c.redirect(buildWebsiteUrl(c.env), 302));
 app.get("/health", (c) => c.json({ ok: true }));
+app.get("/delete-account", (c) => renderDeleteAccount(c.env));
+app.get("/delete-account/", (c) => renderDeleteAccount(c.env));
+app.get("/privacy-policy", (c) => renderPrivacyPolicy(c.env));
+app.get("/privacy-policy/", (c) => renderPrivacyPolicy(c.env));
+app.get("/verify-email", (c) => {
+  const requestUrl = new URL(c.req.url);
+  requestUrl.pathname = "/api/auth/verify-email";
+  return c.redirect(requestUrl.toString(), 302);
+});
 
 app.all("/api/auth/*", async (c) => {
+  const requestUrl = new URL(c.req.url);
+
+  if (requestUrl.pathname === "/api/auth/verify-email") {
+    const callbackUrl = buildAuthEmailCallbackUrl(c.env);
+
+    if (requestUrl.searchParams.get("callbackURL") !== callbackUrl) {
+      requestUrl.searchParams.set("callbackURL", callbackUrl);
+      return c.redirect(requestUrl.toString(), 302);
+    }
+  }
+
+  const flags = buildAuthFeatureFlags(c.env);
+  if (!flags.enablePhonePasswordAuth && isPhonePasswordAuthPath(requestUrl.pathname)) {
+    return c.json({ error: "Not Found" }, 404);
+  }
+
   const auth = createAuth(c.env);
   return auth.handler(c.req.raw);
 });

@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import * as authSchema from "../../../auth-schema";
 import {
   buildAuthCacheKey,
+  buildBetterAuthBaseUrl,
   buildAuthFeatureFlags,
   buildTrustedOrigins,
   validateAuthFeatureFlags,
@@ -22,6 +23,7 @@ const initAuth = (env: Env) => {
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema: authSchema });
   const flags = buildAuthFeatureFlags(env);
+  const betterAuthBaseUrl = buildBetterAuthBaseUrl(env);
 
   validateAuthFeatureFlags(flags);
 
@@ -52,7 +54,7 @@ const initAuth = (env: Env) => {
       },
     },
     trustedOrigins: buildTrustedOrigins(env),
-    baseURL: env.BETTER_AUTH_URL,
+    baseURL: betterAuthBaseUrl,
     secret: env.BETTER_AUTH_SECRET,
   });
 };

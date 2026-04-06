@@ -21,7 +21,7 @@ Cloudflare Worker API for Airhouse Festival v1.
 ## Auth Flows
 - Email/password sign up and sign in via Better Auth
 - Email verification and password reset via Resend when enabled
-- Phone number OTP verification, phone sign-in, and phone password reset via Twilio when enabled
+- Phone number OTP verification via Twilio when enabled
 - Google and Apple OAuth can be enabled later by setting provider credentials
 
 Detailed auth contract, app wiring, and current gaps:
@@ -60,11 +60,13 @@ cp .dev.vars.example .dev.vars
 Put credentials in `.dev.vars`:
 - `DATABASE_URL` (Postgres connection string)
 - `BETTER_AUTH_SECRET` (long random secret)
-- `BETTER_AUTH_URL` (local or public API URL)
+- `BETTER_AUTH_URL` (local or public API origin; auth routes are mounted under `/api/auth`)
 - `AUTH_TRUSTED_ORIGINS` (comma-separated trusted origins and native schemes)
+- `AUTH_EMAIL_CALLBACK_URL` (where email verification should redirect after success or failure)
 - `EMAIL_VERIFICATION_ENABLED` / `REQUIRE_EMAIL_VERIFICATION` (`0` or `1`)
 - `RESEND_API_KEY` + `EMAIL_FROM` for verification and reset emails
 - `PHONE_AUTH_ENABLED` / `PHONE_AUTH_REQUIRE_VERIFICATION` (`0` or `1`)
+- `PHONE_PASSWORD_AUTH_ENABLED` (`0` or `1`, default should stay `0`)
 - `TWILIO_ACCOUNT_SID` + `TWILIO_AUTH_TOKEN` + `TWILIO_FROM_PHONE_NUMBER` for SMS OTP delivery
 - `GOOGLE_OAUTH_CLIENT_ID` + `GOOGLE_OAUTH_CLIENT_SECRET` for Google login
 - `APPLE_OAUTH_CLIENT_ID` + `APPLE_OAUTH_CLIENT_SECRET` for Apple login
@@ -77,11 +79,13 @@ DATABASE_URL=postgresql://user:password@host:5432/db?sslmode=require&channel_bin
 BETTER_AUTH_SECRET=replace-with-long-random-secret
 BETTER_AUTH_URL=http://127.0.0.1:8787
 AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,airhouseapp://
+AUTH_EMAIL_CALLBACK_URL=http://localhost:3000/
 EMAIL_VERIFICATION_ENABLED=0
 REQUIRE_EMAIL_VERIFICATION=0
 RESEND_API_KEY=
 EMAIL_FROM=
 PHONE_AUTH_ENABLED=0
+PHONE_PASSWORD_AUTH_ENABLED=0
 PHONE_AUTH_REQUIRE_VERIFICATION=1
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
@@ -140,12 +144,16 @@ Set production secrets:
 ```bash
 wrangler secret put DATABASE_URL
 wrangler secret put BETTER_AUTH_SECRET
+wrangler secret put RESEND_API_KEY
 wrangler secret put SENTRY_DSN
 ```
 
 Set/update non-secret vars in `wrangler.json`:
 - `BETTER_AUTH_URL` (for example `https://api.airhouse.name`)
-- `AUTH_TRUSTED_ORIGINS` (for example `https://airhouse.name,https://www.airhouse.name`)
+- `AUTH_TRUSTED_ORIGINS` (for example `https://the-airhouse.com,https://www.the-airhouse.com,airhouseapp://`)
+- `AUTH_EMAIL_CALLBACK_URL` (for example `https://www.the-airhouse.com/`)
+- `EMAIL_VERIFICATION_ENABLED` / `REQUIRE_EMAIL_VERIFICATION` (`0` or `1`)
+- `EMAIL_FROM` (for example `Airhouse <hello@mail.airhouse.name>`)
 
 ## 6. Deploy
 Dry run:

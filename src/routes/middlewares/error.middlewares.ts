@@ -1,5 +1,6 @@
 import type { ErrorHandler, NotFoundHandler } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import { buildWebsiteUrl } from "../../lib/auth-config";
 
 export const errorHandler: ErrorHandler = (err, c) => {
   const status = (
@@ -17,11 +18,4 @@ export const errorHandler: ErrorHandler = (err, c) => {
   );
 };
 
-export const notFound: NotFoundHandler = (c) =>
-  c.json(
-    {
-      success: false,
-      message: `Not Found - [${c.req.method}]:[${c.req.url}]`,
-    },
-    404,
-  );
+export const notFound: NotFoundHandler = (c) => c.redirect(buildWebsiteUrl(c.env), 302);

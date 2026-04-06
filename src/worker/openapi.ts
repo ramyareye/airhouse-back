@@ -127,6 +127,23 @@ export function registerManualOpenApi(app: WorkerOpenAPIApp) {
   });
 
   app.openAPIRegistry.registerPath({
+    method: "delete",
+    path: "/api/users/account",
+    tags: ["User"],
+    summary: "Delete the authenticated user's account",
+    security: bearerSecurity,
+    request: {
+      headers: authHeaderSchema,
+    },
+    responses: {
+      "200": jsonResponse(looseObjectSchema, "Account deleted successfully."),
+      "401": jsonResponse(errorSchema, "Unauthorized."),
+      "404": jsonResponse(errorSchema, "User not found."),
+      "500": jsonResponse(errorSchema, "Failed to delete account."),
+    },
+  });
+
+  app.openAPIRegistry.registerPath({
     method: "post",
     path: "/api/users/me/schedules",
     tags: ["User"],

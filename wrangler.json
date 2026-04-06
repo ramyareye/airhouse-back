@@ -9,7 +9,11 @@
   "upload_source_maps": true,
   "vars": {
     "BETTER_AUTH_URL": "https://api.airhouse.name",
-    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name,airhouseapp://",
+    "AUTH_TRUSTED_ORIGINS": "https://airhouse.name,https://www.airhouse.name,https://the-airhouse.com,https://www.the-airhouse.com,airhouseapp://",
+    "AUTH_EMAIL_CALLBACK_URL": "https://www.the-airhouse.com/",
+    "EMAIL_VERIFICATION_ENABLED": "1",
+    "REQUIRE_EMAIL_VERIFICATION": "1",
+    "EMAIL_FROM": "The Air House <noreply@airhouse.name>",
     "CONTENT_EXPORT_TOKEN": "AZDX2ON$74cE0ByAIny9z^aU^VET$Rko"
   },
   "hyperdrive": [

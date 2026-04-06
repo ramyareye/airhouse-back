@@ -8,7 +8,7 @@ const listOrderByMock = vi.fn();
 const insertOnConflictDoNothingMock = vi.fn();
 const deleteWhereMock = vi.fn();
 
-vi.mock("../src/worker/index", () => ({
+vi.mock("../src/worker/auth/create-auth", () => ({
   createAuth: () => ({
     api: {
       getSession: getSessionMock,

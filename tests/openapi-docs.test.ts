@@ -32,6 +32,7 @@ describe("openapi docs", () => {
       CF_VERSION_METADATA: { id: "prod-version" },
     });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe("http://localhost:3000/");
   });
 });

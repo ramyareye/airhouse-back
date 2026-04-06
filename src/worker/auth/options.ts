@@ -2,6 +2,8 @@ import { bearer } from "better-auth/plugins/bearer";
 import { phoneNumber } from "better-auth/plugins/phone-number";
 
 import {
+  buildAuthEmailCallbackUrl,
+  buildBetterAuthBaseUrl,
   buildPhonePlaceholderEmail,
   isValidPhoneNumber,
   type AuthFeatureFlags,
@@ -142,15 +144,15 @@ export const buildEmailAndPasswordOptions = (env: Env, flags: AuthFeatureFlags) 
       const response = await sendResendEmail(resendApiKey!, {
         from: emailFrom!,
         to: user.email,
-        subject: "Reset your Airhouse password",
+        subject: "Reset your password for The Air House",
         html: buildEmailHtml(
           "Reset your password",
-          "We received a request to reset your Airhouse password.",
+          "We received a request to reset your password for The Air House.",
           "Reset password",
           url,
         ),
         text: [
-          "We received a request to reset your Airhouse password.",
+          "We received a request to reset your password for The Air House.",
           "",
           `Reset password: ${url}`,
           "",
@@ -175,17 +177,21 @@ export const buildEmailVerificationOptions = (env: Env, flags: AuthFeatureFlags)
   }
 
   const { emailFrom, resendApiKey } = buildTrimmedSecrets(env);
+  const callbackUrl = encodeURIComponent(buildAuthEmailCallbackUrl(env));
+  const betterAuthBaseUrl = buildBetterAuthBaseUrl(env);
 
   return {
     sendOnSignUp: true,
     sendOnSignIn: true,
     sendVerificationEmail: async ({
       user,
-      url,
+      token,
     }: {
-      url: string;
+      token: string;
       user: { email: string; id: string };
     }) => {
+      const verificationUrl = `${betterAuthBaseUrl}/verify-email?token=${encodeURIComponent(token)}&callbackURL=${callbackUrl}`;
+
       logEvent({
         type: "email_verification_send_attempt",
         userId: user.id,
@@ -195,17 +201,17 @@ export const buildEmailVerificationOptions = (env: Env, flags: AuthFeatureFlags)
       const response = await sendResendEmail(resendApiKey!, {
         from: emailFrom!,
         to: user.email,
-        subject: "Verify your Airhouse email",
+        subject: "Verify your email for The Air House",
         html: buildEmailHtml(
           "Verify your email",
-          "Confirm your email address to finish setting up your Airhouse account.",
+          "Confirm your email address to finish setting up your account for The Air House.",
           "Verify email",
-          url,
+          verificationUrl,
         ),
         text: [
-          "Confirm your email address to finish setting up your Airhouse account.",
+          "Confirm your email address to finish setting up your account for The Air House.",
           "",
-          `Verify email: ${url}`,
+          `Verify email: ${verificationUrl}`,
         ].join("\n"),
       });
 
